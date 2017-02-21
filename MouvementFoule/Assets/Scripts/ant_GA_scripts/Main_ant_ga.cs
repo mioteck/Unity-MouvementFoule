@@ -2,22 +2,42 @@
 using System.Collections;
 
 public class Main_ant_ga : MonoBehaviour {
-    private static int seed = 9367;
+    private static int seed;// = 9367;
     private map myMap;
-    private Ant firstAnt;
-    public static int count = 60;
+    private Ant [] bestAnts;
+    private int count, i;
+    GA ga;
     // Use this for initialization
     void Start () {
         //seed = Random.Range(0, 10000);
-        myMap = new map(seed, gameObject);
-        firstAnt = new Ant(myMap);
-        Debug.Log("seed = " + seed);
-        printTree();
+        //myMap = new map(seed, gameObject);
+        myMap = new map(gameObject);
+        bestAnts = new Ant[GA.NB_GENERATION];
+        ga = new GA(myMap);
+        ga.initialize();
+        count = 0;
+        i = 0;
+        myMap.applyRender();
     }
 	
 	// Update is called once per frame
 	void Update () {
         count++;
+        if (count > 120)
+        {
+            count = 0;
+            if (i < GA.NB_GENERATION)
+            {
+                ga.runAllAnt();
+                bestAnts[i] = ga.getBestAnt();
+                Debug.Log("best ant length : " + bestAnts[i].getDna().getLength() + "  Best Score = " + bestAnts[i].getScore());
+                printTree(bestAnts[i]);
+                ga.selection();
+                ga.mutation();
+            }
+            ++i;
+        }
+        /*count++;
         if (count > 60)
         {
             count = 0;
@@ -27,13 +47,13 @@ public class Main_ant_ga : MonoBehaviour {
             myMap.setValue(firstAnt.getX(), firstAnt.getY(), SType.ROCK);
             myMap.applyRender();
             myMap.setValue(firstAnt.getX(), firstAnt.getY(), temp);
-        }
+        }*/
     }
 
-    public void printTree()
+    public void printTree(Ant ant)
     {
         string str = "";
-        firstAnt.getDna().toString(ref str);
+        ant.getDna().toString(ref str);
         Debug.Log(str);
     }
 

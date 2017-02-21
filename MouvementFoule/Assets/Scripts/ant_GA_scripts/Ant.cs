@@ -6,17 +6,17 @@ public enum Op { MOVE, RIGHT, LEFT, IF, P2, P3};
 
 
 public class Ant{
-    public static int MAX_DEPTH = 100;
+    public static int MAX_DEPTH = 6;
     public static int MAX_ENERGY = 400;
-    private static int width, height;
-    private int x, y, energy;
+
+    private int x, y, energy, width, height, score;
     private Dir dir;
     private map antMap;
     private NTree<Op> dna;
     //constructor
     public Ant(map myMap)
     {
-        antMap = myMap;
+        antMap = new map(myMap);
         width = antMap.getWidth();
         height = antMap.getHeight();
         dir = Dir.EAST;
@@ -29,6 +29,18 @@ public class Ant{
         {
             createSubDna(dna, 0);
         }
+        calcLength();
+    }
+    public Ant(map myMap, NTree<Op> initDna)
+    {
+        antMap = new map(myMap);
+        width = antMap.getWidth();
+        height = antMap.getHeight();
+        dir = Dir.EAST;
+        x = 0;
+        y = 0;
+        energy = MAX_ENERGY;
+        dna = initDna.Clone();
     }
     //accessor
     public int getEnergy()
@@ -39,12 +51,52 @@ public class Ant{
     {
         return dna;
     }
+    public void setDna(NTree<Op> newDna)
+    {
+        dna = newDna.Clone();
+    }
+    public void setSubDna(NTree<Op> newNode, int count)
+    {
+        int i = 0;
+        NTree<Op> temp = newNode.Clone();
+        dna.SetNodeI(ref temp, count, ref i);
+        calcLength();
+    }
+    public NTree<Op> getSubDna(int count)
+    {
+        int i = 0;
+        NTree<Op> newNode = new NTree<Op>(Op.MOVE);
+        dna.GetNodeI(ref newNode, count, ref i);
+        newNode.calcLength();
+        NTree<Op> res = newNode.Clone();
+        return res;
+    }
     public int getX() {
         return x;
     }
     public int getY()
     {
         return y;
+    }
+    public int getScore()
+    {
+        return score;
+    }
+    public void setScore(int s)
+    {
+        score = s;
+    }
+    public void setEnergy(int e)
+    {
+        energy = e;
+    }
+    public map getMap()
+    {
+        return antMap;
+    }
+    public void calcLength()
+    {
+        dna.calcLength();
     }
     //utility function
     public bool isOperator(Op op)
@@ -53,7 +105,7 @@ public class Ant{
             return true;
         return false;
     }
-    void createSubDna(NTree<Op> subDna, int depth)
+    public void createSubDna(NTree<Op> subDna, int depth)
     {
         if(!isOperator(subDna.getData())) { 
             depth++;
@@ -92,32 +144,49 @@ public class Ant{
     }
     public void execute(NTree<Op> subDna)
     {
-        switch (subDna.getData())
+        if (antMap.getMap()[x, y] == SType.FOOD)
         {
-            case Op.MOVE:
-                energy--;
-                move();
-                break;
-            case Op.RIGHT:
-                energy--;
-                right();
-                break;
-            case Op.LEFT:
-                energy--;
-                left();
-                break;
-            case Op.IF:    
-                ifFoodAhead(subDna.GetChild(1), subDna.GetChild(2));
-                break;
-            case Op.P2:
-                prog2(subDna.GetChild(1), subDna.GetChild(2));
-                break;
-            case Op.P3:
-                prog3(subDna.GetChild(1), subDna.GetChild(2), subDna.GetChild(3));
-                break;
-            default:
-                break;
+            score += 1;
+            antMap.setValue(x, y, SType.GROUND);
         }
+        if (energy > 0)
+        {
+            switch (subDna.getData())
+            {
+                case Op.MOVE:
+                    energy--;
+                    move();
+                    break;
+                case Op.RIGHT:
+                    energy--;
+                    right();
+                    break;
+                case Op.LEFT:
+                    energy--;
+                    left();
+                    break;
+                case Op.IF:
+                    ifFoodAhead(subDna.GetChild(1), subDna.GetChild(2));
+                    break;
+                case Op.P2:
+                    prog2(subDna.GetChild(1), subDna.GetChild(2));
+                    break;
+                case Op.P3:
+                    prog3(subDna.GetChild(1), subDna.GetChild(2), subDna.GetChild(3));
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    public void run()
+    {
+        score = 0;
+        energy = MAX_ENERGY;
+        dir = Dir.EAST;
+        x = y = 0;
+        while (energy>0)
+            execute(dna);
     }
     //opérators : respectivily move the ant according to the name of the function
     public void right()
@@ -193,7 +262,7 @@ public class Ant{
             default:
                 break;
         }
-        if (antMap.getMap()[x,y] == SType.FOOD)
+        if (antMap.getMap()[tempX,tempY] == SType.FOOD)
         {
             execute(childTrue);
         }
