@@ -12,7 +12,7 @@ public class Main_ant_ga : MonoBehaviour {
         //seed = Random.Range(0, 10000);
         //myMap = new map(seed, gameObject);
         myMap = new map(gameObject);
-        bestAnts = new Ant[GA.NB_GENERATION];
+        bestAnts = new Ant[GA.NB_ITERATION];
         ga = new GA(myMap);
         ga.initialize();
         count = 0;
@@ -22,19 +22,42 @@ public class Main_ant_ga : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        count++;
-        if (count > 10)
+        if (count < GA.NB_ITERATION)
         {
-            count = 0;
-            if (i < GA.NB_GENERATION)
+            i = 0;
+            while (i < GA.NB_GENERATION)
             {
+                ga = new GA(myMap);
+                ga.initialize();
                 ga.selection();
                 ga.mutation();
                 ga.runAllAnt();
-                Debug.Log("Best Score = " + ga.getBestAnt().getScore() + "  DNA : " + ga.getBestAnt().getDna().toString());
+                if (i == 0)
+                {
+                    bestAnts[count] = ga.getBestAnt();
+                }
+                else if(bestAnts[count].getScore() < ga.getBestAnt().getScore())
+                {
+                    bestAnts[count] = ga.getBestAnt();
+                }
+                //Debug.Log("Best Score = " + ga.getBestAnt().getScore() + "  DNA : " + ga.getBestAnt().getDna().toString());
                 ++i;
             }
         }
+        else if(count < GA.NB_ITERATION + 1)
+        {
+            int maxIndex = 0, maxScore = 0;
+            for (int j = 0; j < GA.NB_ITERATION; j++)
+            {
+                if (bestAnts[j].getScore() > maxScore)
+                {
+                    maxScore = bestAnts[j].getScore();
+                    maxIndex = j;
+                }
+            }
+            Debug.Log("Best Score = " + maxScore + "  DNA : " + bestAnts[maxIndex].getDna().toString());
+        }
+        count++;
         /*count++;
         if (count > 60)
         {
