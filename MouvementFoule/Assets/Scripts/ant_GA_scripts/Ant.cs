@@ -1,8 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public enum Dir { EAST, SOUTH, WEST, NORTH};
 public enum Op { MOVE, RIGHT, LEFT, IF, P2, P3};
+public struct Path
+{
+    public int x, y;
+    public Dir dir;
+
+    public Path(int x, int y, Dir dir)
+    {
+        this.x = x;
+        this.y = y;
+        this.dir = dir;
+    }
+}
+
 
 
 public class Ant{
@@ -13,6 +27,8 @@ public class Ant{
     private Dir dir;
     private map antMap;
     private DNA dna;
+    public List<Path> path;
+
     //constructor
     public Ant(map myMap)
     {
@@ -23,6 +39,7 @@ public class Ant{
         x = 0;
         y = 0;
         dna = new DNA();
+        path = new List<Path>(MAX_ENERGY);
     }
     public Ant(map myMap, Ant initAnt)
     {
@@ -33,7 +50,9 @@ public class Ant{
         x = 0;
         y = 0;
         dna = new DNA(initAnt.getDna());
+        path = new List<Path>(MAX_ENERGY);
     }
+
     //accessor
     public int getEnergy()
     {
@@ -80,6 +99,11 @@ public class Ant{
     {
         return antMap;
     }
+    public void setMap(map newMap)
+    {
+        antMap = new map(newMap);
+    }
+
     //utility function
     public bool isOperator(Op op)
     {
@@ -101,14 +125,17 @@ public class Ant{
                 case Op.MOVE:
                     energy--;
                     move();
+                    path.Add(new Path(x, y, dir));
                     break;
                 case Op.RIGHT:
                     energy--;
                     right();
+                    path.Add(new Path(x, y, dir));
                     break;
                 case Op.LEFT:
                     energy--;
                     left();
+                    path.Add(new Path(x, y, dir));
                     break;
                 case Op.IF:
                     ifFoodAhead(subDna.getChild(0), subDna.getChild(1));
@@ -129,6 +156,7 @@ public class Ant{
         while (energy>0 && score < 89)
             execute(dna);
     }
+
     //opérators : respectivily move the ant according to the name of the function
     public void right()
     {
