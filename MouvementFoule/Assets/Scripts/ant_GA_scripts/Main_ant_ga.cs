@@ -23,19 +23,17 @@ public class Main_ant_ga : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         count++;
-        if (count > 120)
+        if (count > 10)
         {
             count = 0;
             if (i < GA.NB_GENERATION)
             {
-                ga.runAllAnt();
-                bestAnts[i] = ga.getBestAnt();
-                Debug.Log("best ant length : " + bestAnts[i].getDna().getLength() + "  Best Score = " + bestAnts[i].getScore());
-                printTree(bestAnts[i]);
                 ga.selection();
                 ga.mutation();
+                ga.runAllAnt();
+                Debug.Log("Best Score = " + ga.getBestAnt().getScore() + "  DNA : " + ga.getBestAnt().getDna().toString());
+                ++i;
             }
-            ++i;
         }
         /*count++;
         if (count > 60)
@@ -48,13 +46,6 @@ public class Main_ant_ga : MonoBehaviour {
             myMap.applyRender();
             myMap.setValue(firstAnt.getX(), firstAnt.getY(), temp);
         }*/
-    }
-
-    public void printTree(Ant ant)
-    {
-        string str = "";
-        ant.getDna().toString(ref str);
-        Debug.Log(str);
     }
 
 }
