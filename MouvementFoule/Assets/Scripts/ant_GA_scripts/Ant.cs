@@ -21,7 +21,7 @@ public struct Path
 
 public class Ant{
     public static int width = 32, height = 32;
-    public static int MAX_ENERGY = 400;
+    public static int MAX_ENERGY = 800;
 
     private int x, y, energy,score;
     private Dir dir;
@@ -118,7 +118,7 @@ public class Ant{
             score += 1;
             antMap.setValue(x, y, SType.GROUND);
         }
-        if (energy > 0)
+        if (energy > 0 && score <= 89)
         {
             switch (subDna.getData())
             {
@@ -153,7 +153,7 @@ public class Ant{
     }
     public void run()
     {
-        while (energy>0 && score < 89)
+        while (energy>0 && score <= 89)
             execute(dna);
     }
 

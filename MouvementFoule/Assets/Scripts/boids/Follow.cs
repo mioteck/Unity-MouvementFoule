@@ -36,5 +36,5 @@ public class Follow : MonoBehaviour {
         bound /= (boid.Length - 1);
         Camera.main.transform.LookAt(bound);
         Camera.main.transform.position = Vector3.MoveTowards(Camera.main.transform.position, bound, 10f);
-	}
+    }
 }
