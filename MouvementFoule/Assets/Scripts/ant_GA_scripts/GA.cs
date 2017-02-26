@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class GA{
-    public static int NB_ITERATION = 20;
+    public static int NB_ITERATION = 1;
     public static int POPULATION_SIZE = 500;
     public static int NB_GENERATION = 50;
     public static int PARENT_POPULATION_SIZE = 50;

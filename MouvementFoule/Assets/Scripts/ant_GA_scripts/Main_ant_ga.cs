@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class Main_ant_ga : MonoBehaviour {
-    private static int seed = 1;// = 9367;
+    private static int seed = 1;// seed = 12,13 and energy = 800;
     private map myMap;
     private Ant [] bestAnts;
     private Ant firstAnt;
@@ -20,7 +20,6 @@ public class Main_ant_ga : MonoBehaviour {
         ga = new GA(myMap);
         myMap.applyRender();
         isGenFinish = false;
-        animCount = 0;
         animCount2 = 0;
         StartCoroutine(GenGeneration());
     }
@@ -29,17 +28,12 @@ public class Main_ant_ga : MonoBehaviour {
 	void Update () {
         if (isGenFinish)
         {
-            if (animCount > 10)
+            if (animCount2 < firstAnt.path.Count)
             {
-                animCount = 0;
-                if (animCount2 < firstAnt.path.Count)
-                {
-                    firstAnt.getMap().setValue(firstAnt.path[animCount2].x, firstAnt.path[animCount2].y, SType.ROCK);
-                    firstAnt.getMap().applyRender();
-                    animCount2++;
-                }
+                firstAnt.getMap().setValue(firstAnt.path[animCount2].x, firstAnt.path[animCount2].y, SType.ROCK);
+                firstAnt.getMap().applyRender();
+                animCount2++;
             }
-            animCount++;
         }
     }
 
