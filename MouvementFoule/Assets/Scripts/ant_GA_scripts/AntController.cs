@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class AntController : MonoBehaviour {
     public GameObject SPIDER;
+    
     private static List<Path> path;
     public static GameObject spider;
     private static int count;
@@ -13,7 +14,7 @@ public class AntController : MonoBehaviour {
     {
         path = newPath;
         speed = localScale[0]/16;
-        spider.transform.position = new Vector3(-localScale[0], 0.2f, -localScale[0]);
+        spider.transform.position = new Vector3(-4.9f, 0.2f, 4.9f);
         spider.transform.rotation = new Quaternion(0, 90, 0, 0);
         spider.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
         /*foreach (Path p in newPath){
@@ -32,8 +33,9 @@ public class AntController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	    if(path != null)
+        if (path != null)
         {
+            if (count >= path.Count) return;
             switch (path[count].dir)
             {
                 case Dir.EAST:
@@ -63,16 +65,16 @@ public class AntController : MonoBehaviour {
                     switch (path[count].dir)
                     {
                         case Dir.EAST:
-                            spider.transform.Translate(new Vector3(speed, 0, 0));
+                            spider.transform.Translate(new Vector3(-speed*5, 0, 0));
                             break;
                         case Dir.WEST:
-                            spider.transform.Translate(new Vector3(-speed, 0, 0));
+                            spider.transform.Translate(new Vector3(speed*5, 0, 0));
                             break;
                         case Dir.NORTH:
-                            spider.transform.Translate(new Vector3(0, 0, -speed));
+                            spider.transform.Translate(new Vector3(0, 0, speed*5));
                             break;
                         case Dir.SOUTH:
-                            spider.transform.Translate(new Vector3(0, 0, speed));
+                            spider.transform.Translate(new Vector3(0, 0, speed*5));
                             break;
                         default:
                             break;
@@ -80,6 +82,7 @@ public class AntController : MonoBehaviour {
                     break;
             }
             count++;
+            
         }
 	}
 }
