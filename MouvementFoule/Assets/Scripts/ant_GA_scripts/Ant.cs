@@ -6,13 +6,12 @@ public enum Dir { EAST, SOUTH, WEST, NORTH};
 public enum Op { MOVE, RIGHT, LEFT, IF, P2, P3};
 public struct Path
 {
-    public int x, y;
+    public Op op;
     public Dir dir;
 
-    public Path(int x, int y, Dir dir)
+    public Path(Op op, Dir dir)
     {
-        this.x = x;
-        this.y = y;
+        this.op = op;
         this.dir = dir;
     }
 }
@@ -21,7 +20,7 @@ public struct Path
 
 public class Ant{
     public static int width = 32, height = 32;
-    public static int MAX_ENERGY = 800;
+    public static int MAX_ENERGY = 50;
 
     private int x, y, energy,score;
     private Dir dir;
@@ -39,7 +38,7 @@ public class Ant{
         x = 0;
         y = 0;
         dna = new DNA();
-        path = new List<Path>(MAX_ENERGY);
+        path = new List<Path>(0);
     }
     public Ant(map myMap, Ant initAnt)
     {
@@ -50,7 +49,7 @@ public class Ant{
         x = 0;
         y = 0;
         dna = new DNA(initAnt.getDna());
-        path = new List<Path>(MAX_ENERGY);
+        path = new List<Path>(0);
     }
 
     //accessor
@@ -116,6 +115,7 @@ public class Ant{
         if (antMap.getMap()[x, y] == SType.FOOD)
         {
             score += 1;
+            energy += 9;
             antMap.setValue(x, y, SType.GROUND);
         }
         if (energy > 0 && score <= 89)
@@ -125,17 +125,17 @@ public class Ant{
                 case Op.MOVE:
                     energy--;
                     move();
-                    path.Add(new Path(x, y, dir));
+                    path.Add(new Path(subDna.getData(), dir));
                     break;
                 case Op.RIGHT:
                     energy--;
                     right();
-                    path.Add(new Path(x, y, dir));
+                    path.Add(new Path(subDna.getData(), dir));
                     break;
                 case Op.LEFT:
                     energy--;
                     left();
-                    path.Add(new Path(x, y, dir));
+                    path.Add(new Path(subDna.getData(), dir));
                     break;
                 case Op.IF:
                     ifFoodAhead(subDna.getChild(0), subDna.getChild(1));
@@ -200,11 +200,6 @@ public class Ant{
                 break;
             default:
                 break;
-        }
-        if (antMap.getMap()[x, y] == SType.FOOD)
-        {
-            score += 1;
-            antMap.setValue(x, y, SType.GROUND);
         }
     }
     //non leaf opérators 

@@ -1,6 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+//TODO :
+//  selection probabiliste 
+//  supprimer les copies inutiles
+//  faire un calcul du score qui prend en compte la rapidité d'éxécution 
+//      ET / OU
+//      diminuer l'energie disponible au départ mais augmenter celle ci lorsqu'une bouffe est rammassé
+//  écrire un programme test qui run le programme sur plein de seed et qui retourne les meilleurs score pour chaque seed testé
+
+
+
+
+
+
 public class Main_ant_ga : MonoBehaviour {
     private static int seed = 1;// seed = 12,13 and energy = 800;
     private map myMap;
@@ -28,12 +41,17 @@ public class Main_ant_ga : MonoBehaviour {
 	void Update () {
         if (isGenFinish)
         {
-            if (animCount2 < firstAnt.path.Count)
+            if(animCount2 == 0)
+            {
+                AntController.setPath(firstAnt.path, gameObject.transform.localScale);
+            }
+            animCount2 = 1;
+            /*if (animCount2 < firstAnt.path.Count)
             {
                 firstAnt.getMap().setValue(firstAnt.path[animCount2].x, firstAnt.path[animCount2].y, SType.ROCK);
                 firstAnt.getMap().applyRender();
                 animCount2++;
-            }
+            }*/
         }
     }
 
