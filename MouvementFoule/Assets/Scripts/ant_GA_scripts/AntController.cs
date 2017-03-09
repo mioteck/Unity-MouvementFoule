@@ -9,22 +9,21 @@ public class AntController : MonoBehaviour {
     public static GameObject spider;
     private static int count;
     private static float speed;
+    private int slowAnim;
 
     public static void setPath(List<Path> newPath, Vector3 localScale)
     {
         path = newPath;
         speed = localScale[0]/16;
-        spider.transform.position = new Vector3(-4.9f, 0.2f, 4.9f);
+        spider.transform.position = new Vector3(-4.85f, 0.2f, 4.85f);
         spider.transform.rotation = new Quaternion(0, 90, 0, 0);
         spider.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
-        /*foreach (Path p in newPath){
-            path.Add(new Path(p.x,p.y,p.dir));
-        }*/
     }
 
 	// Use this for initialization
 	void Start () {
         count = 0;
+        slowAnim = 0;
         spider = Instantiate(SPIDER);
         spider.transform.position = new Vector3(0, 0.2f, 0);
         spider.transform.rotation = new Quaternion(0, 0, 0, 0);
@@ -33,8 +32,9 @@ public class AntController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (path != null)
+        if (path != null && slowAnim >= 6)
         {
+            slowAnim = 0;
             if (count >= path.Count) return;
             switch (path[count].dir)
             {
@@ -82,7 +82,7 @@ public class AntController : MonoBehaviour {
                     break;
             }
             count++;
-            
         }
+        slowAnim++;
 	}
 }

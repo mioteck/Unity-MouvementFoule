@@ -4,7 +4,7 @@ using System.Collections;
 public class GA{
     public static int NB_ITERATION = 1;
     public static int POPULATION_SIZE = 500;
-    public static int NB_GENERATION = 50;
+    public static int NB_GENERATION = 10;
     public static int PARENT_POPULATION_SIZE = 50;
     public static int MUTATE_PROBABILITY = 90;
     public static int MUTATE_STRONG = 1;

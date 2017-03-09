@@ -21,7 +21,7 @@ public class Main_ant_ga : MonoBehaviour {
     private Ant firstAnt;
     private bool isGenFinish;
     private GA ga;
-    private int animCount, animCount2;
+    private int animCount;
 
     // Use this for initialization
     void Start () {
@@ -33,26 +33,12 @@ public class Main_ant_ga : MonoBehaviour {
         ga = new GA(myMap);
         myMap.applyRender();
         isGenFinish = false;
-        animCount2 = 0;
         StartCoroutine(GenGeneration());
     }
 	
 	// Update is called once per frame
 	void Update () {
-        if (isGenFinish)
-        {
-            if(animCount2 == 0)
-            {
-                AntController.setPath(firstAnt.path, gameObject.transform.localScale);
-            }
-            animCount2 = 1;
-            /*if (animCount2 < firstAnt.path.Count)
-            {
-                firstAnt.getMap().setValue(firstAnt.path[animCount2].x, firstAnt.path[animCount2].y, SType.ROCK);
-                firstAnt.getMap().applyRender();
-                animCount2++;
-            }*/
-        }
+
     }
 
     IEnumerator GenGeneration()
@@ -91,6 +77,7 @@ public class Main_ant_ga : MonoBehaviour {
         firstAnt.run();
         firstAnt.setMap(myMap);
         isGenFinish = true;
+        AntController.setPath(firstAnt.path, gameObject.transform.localScale);
     }
 
 }
