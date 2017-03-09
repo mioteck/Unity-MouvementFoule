@@ -23,7 +23,7 @@ public class DNAMonster{
             for (int i = 0; i < rand; ++i)
             {
                 children[i] = new DNAMonster(depth);
-                joints[i] = new Joint(bodyPart, children[i]);
+                joints[i] = new Joint(bodyPart, children[i].bodyPart);
             }
             ++depth;
         }
@@ -68,12 +68,21 @@ public class DNAMonster{
     {
         return children[i];
     }
+    public Joint[] getJoints()
+    {
+        return joints;
+    }
+    public Joint getJoint(int i)
+    {
+        return joints[i];
+    }
     public void getNode(DNAMonster nodeI, ref int pos)
     {
         --pos;
         if (pos == 0)
         {
-            nodeI.bodyPart = bodyPart;
+            nodeI = new DNAMonster(this);
+            /*nodeI.bodyPart = bodyPart;
             nodeI.children = null;
             if (children != null)
             {
@@ -82,7 +91,7 @@ public class DNAMonster{
                 {
                     nodeI.children[i] = new DNAMonster(children[i]);
                 }
-            }
+            }*/
         }
         else if (pos > 0 && children != null)
         {
@@ -105,6 +114,7 @@ public class DNAMonster{
                 for (int i = 0; i < newNode.children.Length; ++i)
                 {
                     this.children[i] = new DNAMonster(newNode.children[i]);
+                    this.joints[i] = new Joint(newNode.joints[i]);
                 }
             }
         }
