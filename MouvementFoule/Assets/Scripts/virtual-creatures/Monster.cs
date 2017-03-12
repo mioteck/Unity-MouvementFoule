@@ -4,19 +4,19 @@ using UnityEngine;
 
 public class Monster : MonoBehaviour {
     public GameObject prefab;
-    public DNAMonster dna;
-    public GameObject[] go;
-    public int score;
+    private DNAMonster dna;
+    private GameObject[] go;
+    private int score;
+    private Vector3 startPos, endPos;
     private int id;
-    public Vector3 startPos, endPos;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         dna = new DNAMonster();
         id = 0;
         go = new GameObject[dna.getSize()];
         initMonster();
-	}
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -73,5 +73,31 @@ public class Monster : MonoBehaviour {
     public void createJoint(Joint joint, GameObject parent, GameObject child)
     {
 
+    }
+
+    /// <summary>
+    /// try to move one monster
+    /// </summary>
+    public void run()
+    {
+
+    }
+
+    //accessors
+    public int getScore()
+    {
+        return score;
+    }
+    public void setScore(int newScore)
+    {
+        score = newScore;
+    }
+    public DNAMonster getDna()
+    {
+        return dna;
+    }
+    public void setDna(DNAMonster newDna)
+    {
+        dna = newDna;
     }
 }

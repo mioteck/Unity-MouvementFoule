@@ -75,7 +75,18 @@ public class DNAMonster{
     {
         return joints[i];
     }
-    public void getNode(DNAMonster nodeI, ref int pos)
+
+    public DNAMonster getSubDna(int i)
+    {
+        DNAMonster temp = new DNAMonster();
+        getNode(temp, ref i);
+        return temp;
+    }
+    public void setSubDna(DNAMonster temp, int i)
+    {
+        setNode(temp, ref i);
+    }
+    private void getNode(DNAMonster nodeI, ref int pos)
     {
         --pos;
         if (pos == 0)
@@ -100,7 +111,7 @@ public class DNAMonster{
             }
         }
     }
-    public void setNode(DNAMonster newNode, ref int pos)
+    private void setNode(DNAMonster newNode, ref int pos)
     {
         --pos;
         if (pos == 0)
