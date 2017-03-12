@@ -4,7 +4,7 @@ using System.Collections;
 public class GA{
     public static int NB_ITERATION = 1;
     public static int POPULATION_SIZE = 500;
-    public static int NB_GENERATION = 50;
+    public static int NB_GENERATION = 10;
     public static int PARENT_POPULATION_SIZE = 50;
     public static int MUTATE_PROBABILITY = 90;
     public static int MUTATE_STRONG = 1;
@@ -39,7 +39,6 @@ public class GA{
         {
             int best = getBestAntIndex();
             parentPopulation[i] = new Ant(myMap, population[best]);
-            //parentPopulation[i].setScore(population[best].getScore());
             population[best].setScore(0);
         }
         //select parent population base on a random on total score
@@ -64,11 +63,6 @@ public class GA{
     }
     public void mutation()
     {
-        //copy parents to population
-        //for (int i = 0; i < PARENT_POPULATION_SIZE; i++)
-        //{
-        //    population[i] = new Ant(myMap, parentPopulation[i]);
-        //}
         int randMother = 0, randFather = 0;
         for (int i = 0; i < POPULATION_SIZE; i++)
         {
@@ -84,22 +78,20 @@ public class GA{
     {
         int randMother = Random.Range(1, mother.getDna().getSize());
         int randFather = Random.Range(1, father.getDna().getSize());
-        //Debug.Log("rand mother : " + randMother + " rand father : " + randFather);
-        //Debug.Log("mother : " + mother.getDna().toString());
-        //Debug.Log("father : " + father.getDna().toString());
-        //Debug.Log("father subDNA : " + father.getSubDna(randFather).toString());
         child = new Ant(myMap, mother);
         child.setSubDna(father.getSubDna(randFather), randMother);
-        //Debug.Log("child : " + child.getDna().toString());
     }
     public void mutate(Ant ant)
     {
-        int rand = Random.Range(1, 101);
-        if (rand <= MUTATE_PROBABILITY)
+        for (int i = 0; i < MUTATE_STRONG; ++i)
         {
-            int rand2 = Random.Range(0, ant.getDna().getSize());
-            Ant newAnt = new Ant(myMap);
-            ant.setSubDna(newAnt.getDna(), rand2);
+            int rand = Random.Range(1, 101);
+            if (rand <= MUTATE_PROBABILITY)
+            {
+                int rand2 = Random.Range(0, ant.getDna().getSize());
+                Ant newAnt = new Ant(myMap);
+                ant.setSubDna(newAnt.getDna(), rand2);
+            }
         }
     }
     public Ant getBestAnt()

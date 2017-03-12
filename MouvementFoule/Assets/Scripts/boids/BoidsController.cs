@@ -48,7 +48,7 @@ public class BoidsController : MonoBehaviour
             GameObject go = Instantiate(boidPrefab);
             go.transform.SetParent(parentBoids);
             go.transform.RandomPosition(numberOfBoid / 10);
-            go.transform.localScale = new Vector3(1, 1, 1);
+            go.transform.localScale = new Vector3(20, 20, 20);
             boids[i] = go;
             if (isActiveR7)
             {
@@ -88,7 +88,7 @@ public class BoidsController : MonoBehaviour
                 for(int k=0; k<placeToDontTend.Length;k++)
                 {
                     Vector3 tmp8 = placeToDontTend[k].transform.position - bi.transform.position;
-                    if(Vector3.Magnitude(tmp8) < 100)
+                    if(Vector3.Magnitude(tmp8) < 40)
                     {
                         v8 -= tmp8 * 5;
                     }
