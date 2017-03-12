@@ -43,7 +43,6 @@ public class DNAMonster{
         }
     }
 
-
     public int getSize()
     {
         int res = 1;
