@@ -12,8 +12,8 @@ public class Monster : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        dna = new DNAMonster();
         id = 0;
+        dna = new DNAMonster();
         go = new GameObject[dna.getSize()];
         initMonster();
     }
@@ -29,8 +29,9 @@ public class Monster : MonoBehaviour {
     public void initMonster()
     {
         //need to instanciate the first bodypart 
-        Vector3 worldLocation = new Vector3(0, 0, 0);
+        Vector3 worldLocation = gameObject.transform.position;
         Quaternion worldQuaternion = new Quaternion(0, 0, 0, 0);
+        go[id] = new GameObject();
         go[id] = Instantiate(prefab, worldLocation, worldQuaternion);
         go[id].GetComponent<Rigidbody>().GetComponent<Transform>().localScale = new Vector3(1, 1, 1);
         id++;
@@ -47,7 +48,7 @@ public class Monster : MonoBehaviour {
         for(int i = 0; i < nbChildren; ++i)
         {
             createCube(go[fatherID], subDna.getJoint(i));
-            createJoint(subDna.getJoint(i), go[fatherID], go[id]);
+            createJoint(subDna.getJoint(i), go[fatherID], go[id-1]);
             createMonster(subDna.getChild(i), id-1);
         }
     }

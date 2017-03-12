@@ -10,6 +10,7 @@ public class DNAMonster{
     private BodyPart bodyPart;
     private DNAMonster[] children;
     private Joint[] joints;
+    private int score = 0;
 
     public DNAMonster(int depth = 0)
     {
@@ -136,5 +137,12 @@ public class DNAMonster{
             }
         }
     }
-
+    public int getScore()
+    {
+        return score;
+    }
+    public void setScore(int newScore)
+    {
+        score = newScore;
+    }
 }
