@@ -4,34 +4,29 @@ using UnityEngine;
 
 
 public class DNAMonster{
-    public static int MAX_BODYPART = 10;
-    public static int MAX_CHILDREN = 4; //<5 un cube n'a que 6 face!!!!!
+    public static int MAX_DEPTH = 4;
+    public static int MAX_CHILDREN = 3; //<5 un cube n'a que 6 face!!!!!
     private BodyPart bodyPart;
     private DNAMonster[] children;
     private Joint[] joints;
-    public Vector3[] anchor;
-    public Vector3 parentAnchor;
+    private Vector3[] anchor;
+    private Vector3 parentAnchor;
     private int score = 0;
 
-    public DNAMonster()
-    {
-        new DNAMonster(Vector3.zero);
-    }
-    public DNAMonster(Vector3 parentAnchor, int count = 0)
+    public DNAMonster(Vector3 parentAnchor, int depth = 0)
     {
         bodyPart = new BodyPart();
-        int rand = 0;
-        if(count < MAX_BODYPART)
+        this.parentAnchor = parentAnchor;
+        ++depth;
+        if(depth < MAX_DEPTH)
         {
-            rand = Random.Range(0, MAX_CHILDREN);
+            int rand = Random.Range(0, MAX_CHILDREN+1);
             children = new DNAMonster[rand];
-            //joints = new Joint[rand];
+            anchor = new Vector3[rand];
             createAnchor(rand);
             for (int i = 0; i < rand; ++i)
             {
-                ++count;
-                children[i] = new DNAMonster(invertAnchor(anchor[i]), count);
-                //joints[i] = new Joint(bodyPart, children[i].bodyPart);
+                children[i] = new DNAMonster(anchor[i], depth);
             }
         }
 
@@ -44,12 +39,10 @@ public class DNAMonster{
         {
             children = new DNAMonster[dna.children.Length];
             anchor = new Vector3[dna.anchor.Length];
-            //joints = new Joint[dna.joints.Length];
             for (int i = 0; i < dna.children.Length; ++i)
             {
                 children[i] = new DNAMonster(dna.children[i]);
                 anchor[i] = dna.anchor[i];
-                //joints[i] = new Joint(dna.joints[i]);
             }
         }
     }
@@ -57,27 +50,26 @@ public class DNAMonster{
 
     public void createAnchor(int size)
     {
-        anchor = new Vector3[size];
         bool test = false;
-        int val = 0;
         for (int i = 0; i < size; i++)
         {
-            while (!test)
+            test = true;
+            int val = Random.Range(0, 6);
+            anchor[i] = associateIntToAnchor(val);
+            if(invertAnchor(parentAnchor) == anchor[i])
             {
-                test = true;
-                val = Random.Range(0, 6);
-                anchor[i] = associateIntToAnchor(val);
-                if(parentAnchor == anchor[i])
+                test = false;
+            }
+            for (int j = 0; j < i; j++)
+            {
+                if (anchor[j] == anchor[i])
                 {
                     test = false;
                 }
-                for (int j = 0; j < i; j++)
-                {
-                    if (anchor[j] == anchor[i])
-                    {
-                        test = false;
-                    }
-                }
+            }
+            if (!test)
+            {
+                i--;
             }
         }
     }
@@ -156,6 +148,7 @@ public class DNAMonster{
     {
         return joints[i];
     }
+
     public Vector3[] getAnchor()
     {
         return anchor;

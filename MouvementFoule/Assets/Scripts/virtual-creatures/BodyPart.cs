@@ -2,9 +2,9 @@
 
 
 public class BodyPart{
-    public static float MAX_X = 1.0f;
-    public static float MAX_Y = 1.0f;
-    public static float MAX_Z = 1.0f;
+    public static float MAX_X = 2.0f;
+    public static float MAX_Y = 2.0f;
+    public static float MAX_Z = 2.0f;
     private Vector3 size;
 
     public BodyPart(float x, float y, float z)
@@ -13,7 +13,8 @@ public class BodyPart{
     }
     public BodyPart()
     {
-        size = new Vector3(Random.Range(0, MAX_X), Random.Range(0, MAX_Y), Random.Range(0, MAX_Z));
+        size = new Vector3(Random.Range(0.3f, MAX_X), Random.Range(0.3f, MAX_Y), Random.Range(0.3f, MAX_Z));
+        //size = new Vector3(1, 1, 1);
     }
     public BodyPart(BodyPart bodyPart)
     {

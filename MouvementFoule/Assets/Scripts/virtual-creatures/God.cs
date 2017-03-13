@@ -7,15 +7,15 @@ public class God : MonoBehaviour {
     public GameObject GodPrefab;
     // Use this for initialization
     void Start () {
-        ga = new GeneticAlgo();
-        ga.initialize();
+        //ga = new GeneticAlgo();
+        //ga.initialize();
 	}
 	
 	// Update is called once per frame
 	void Update () {
         if (Input.GetButtonDown("Fire1"))
         {
-            spawnMonster(new Vector3(Random.Range(-20, 20), 6, Random.Range(-50, -20)));
+            spawnMonster(new Vector3(Random.Range(-20, 20), 2, Random.Range(-50, -20)));
         }
     }
 

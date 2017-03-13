@@ -42,11 +42,11 @@ public class GeneticAlgo{
     {
         for (int i = 0; i < POPULATION_SIZE; ++i)
         {
-            population[i] = new DNAMonster();
+            population[i] = new DNAMonster(Vector3.zero, 0);
         }
         for(int i = 0; i<PARENT_POPULATION_SIZE; ++i)
         {
-            parentPopulation[i] = new DNAMonster();
+            parentPopulation[i] = new DNAMonster(Vector3.zero, 0);
         }
     }
 
@@ -87,7 +87,7 @@ public class GeneticAlgo{
             if (rand <= MUTATE_PROBABILITY)
             {
                 int rand2 = Random.Range(0, child.getSize());
-                child.setSubDna(new DNAMonster(), rand2);
+                child.setSubDna(new DNAMonster(Vector3.zero, 0), rand2);
             }
         }
     }
