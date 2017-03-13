@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class GeneticAlgo{
     public static int POPULATION_SIZE = 10;
-    public static int NB_GENERATION = 2;
-    public static int PARENT_POPULATION_SIZE = 3;
+    //public static int NB_GENERATION = 2;
+    public static int PARENT_POPULATION_SIZE = 2;
     public static int MUTATE_PROBABILITY = 90;
     public static int MUTATE_STRONG = 1;
 
@@ -61,7 +61,7 @@ public class GeneticAlgo{
         for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
         {
             int best = getBestMonsterIndex();
-            parentPopulation[i] = population[best];
+            parentPopulation[i] = new DNAMonster(population[best]);
             population[best].setScore(0);
         }
     }
@@ -89,8 +89,8 @@ public class GeneticAlgo{
             int rand = Random.Range(1, 101);
             if (rand <= MUTATE_PROBABILITY)
             {
-                int rand2 = Random.Range(0, child.getSize());
-                child.setSubDna(new DNAMonster(Vector3.zero, 0), rand2);
+                int rand2 = Random.Range(1, child.getSize());
+                child.setSubDna(new DNAMonster(Vector3.zero, 0).getSubDna(1), rand2);
             }
         }
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 public class DNAMonster{
-    public static int MAX_DEPTH = 2;
+    public static int MAX_DEPTH = 3;
     public static int MAX_CHILDREN = 3; //<5 un cube n'a que 6 face!!!!!
     private BodyPart bodyPart;
     private DNAMonster[] children;
@@ -19,7 +19,7 @@ public class DNAMonster{
         ++depth;
         if(depth < MAX_DEPTH)
         {
-            int rand = Random.Range(0, MAX_CHILDREN+1);
+            int rand = Random.Range(1, MAX_CHILDREN+1);
             children = new DNAMonster[rand];
             anchor = new Vector3[rand];
             createAnchor(rand);
@@ -159,12 +159,14 @@ public class DNAMonster{
 
     public DNAMonster getSubDna(int i)
     {
+        i++;
         DNAMonster temp = new DNAMonster(Vector3.zero);
         getNode(temp, ref i);
         return temp;
     }
     public void setSubDna(DNAMonster temp, int i)
     {
+        i++;
         setNode(temp, ref i);
     }
     private void getNode(DNAMonster nodeI, ref int pos)

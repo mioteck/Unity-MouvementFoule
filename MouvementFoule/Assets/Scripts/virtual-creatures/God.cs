@@ -4,28 +4,37 @@ using UnityEngine;
 
 public class God : MonoBehaviour {
     //static tab referencing all monster
+    public float tempTime;
     public GameObject GodPrefab;
     public List<GameObject> monstersGO;
     // Use this for initialization
     void Start () {
+        tempTime = Time.time;
         GeneticAlgo.idInstance = 0;
         GeneticAlgo.initAlgo();
-        for(int i = 0; i < GeneticAlgo.POPULATION_SIZE-1; i++)
+        for(int i = 0; i < GeneticAlgo.POPULATION_SIZE; i++)
         {
-            spawnMonster(new Vector3(Random.Range(-20, 20), 2, Random.Range(-45, -20)));
+            spawnMonster(new Vector3(8 * (i - GeneticAlgo.POPULATION_SIZE / 2), 5, -30));
         }
-	}
+        tempTime = Time.time;
+    }
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetButtonDown("Fire1"))
+        if (Time.time - tempTime > Monster.LifeDuration+0.3)
         {
+            foreach(GameObject g in monstersGO)
+            {
+                Destroy(g);
+            }
+            monstersGO.Clear();
             GeneticAlgo.idInstance = 0;
             GeneticAlgo.createOneGeneration();
-            for (int i = 0; i < GeneticAlgo.POPULATION_SIZE - 1; i++)
+            for (int i = 0; i < GeneticAlgo.POPULATION_SIZE; i++)
             {
-                spawnMonster(new Vector3(Random.Range(-20, 20), 2, Random.Range(-45, -20)));
+                spawnMonster(new Vector3(8 * (i - GeneticAlgo.POPULATION_SIZE / 2), 5, -30));
             }
+            tempTime = Time.time;
         }
     }
 

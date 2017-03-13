@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Monster : MonoBehaviour {
-
     //time of life
     public static float LifeDuration = 10;
     //cube Prefab
