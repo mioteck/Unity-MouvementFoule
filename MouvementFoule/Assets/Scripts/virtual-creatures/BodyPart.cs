@@ -14,7 +14,6 @@ public class BodyPart{
     public BodyPart()
     {
         size = new Vector3(Random.Range(0.3f, MAX_X), Random.Range(0.3f, MAX_Y), Random.Range(0.3f, MAX_Z));
-        //size = new Vector3(1, 1, 1);
     }
     public BodyPart(BodyPart bodyPart)
     {

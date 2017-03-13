@@ -4,11 +4,10 @@ using UnityEngine;
 
 
 public class DNAMonster{
-    public static int MAX_DEPTH = 4;
+    public static int MAX_DEPTH = 2;
     public static int MAX_CHILDREN = 3; //<5 un cube n'a que 6 face!!!!!
     private BodyPart bodyPart;
     private DNAMonster[] children;
-    private Joint[] joints;
     private Vector3[] anchor;
     private Vector3 parentAnchor;
     private int score = 0;
@@ -140,14 +139,6 @@ public class DNAMonster{
     {
         return children[i];
     }
-    public Joint[] getJoints()
-    {
-        return joints;
-    }
-    public Joint getJoint(int i)
-    {
-        return joints[i];
-    }
 
     public Vector3[] getAnchor()
     {
@@ -217,7 +208,6 @@ public class DNAMonster{
                 {
                     children[i] = new DNAMonster(newNode.children[i]);
                     anchor[i] = newNode.anchor[i];
-                    //this.joints[i] = new Joint(newNode.joints[i]);
                 }
             }
         }

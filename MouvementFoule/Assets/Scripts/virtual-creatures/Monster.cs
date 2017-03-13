@@ -3,24 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Monster : MonoBehaviour {
+    //cube Prefab
     public GameObject prefab;
+    //dna of one monster (use by genetic algorith)
     private DNAMonster dna;
+    //list of cube gameobject generate from dna
     private GameObject[] go;
-    private int score;
-    private Vector3 startPos, endPos;
+    //others
     private int id;
+    private int score;
+    private float count;
+    private Vector3 startPos, endPos;
+    
 
     // Use this for initialization
     void Start () {
         id = 0;
+        count = 0;
+        startPos = gameObject.transform.position;
         dna = new DNAMonster(Vector3.zero, 0);
-        go = new GameObject[dna.getSize()+1];
+        go = new GameObject[dna.getSize()];
         initMonster();
     }
 	
 	// Update is called once per frame
 	void Update () {
-		
+        run(count);
+        count += 0.1f;
+        if(count > 1.0f)
+        {
+            count = 0.0f;
+        }
 	}
 
     /// <summary>
@@ -29,10 +42,16 @@ public class Monster : MonoBehaviour {
     public void initMonster()
     {
         //need to instanciate the first bodypart 
-        go[id] = Instantiate(prefab, gameObject.transform.position, new Quaternion(0, 0, 0, 0));
+        go[id] = Instantiate(prefab, startPos, new Quaternion(0, 0, 0, 0));
         go[id].transform.localScale = dna.getBodyPart().getSize();
         if (dna.getChildren() != null)
-            createMonster(dna,0);
+        {
+            int nbChildren = dna.getChildren().Length;
+            for (int i = 0; i < nbChildren; ++i)
+            {
+                createMonster(dna.getChild(i), 0);
+            }
+        }
     }
     /// <summary>
     /// generate all the part of the monster recursively
@@ -76,50 +95,56 @@ public class Monster : MonoBehaviour {
     /// </summary>
     public void createJoint(GameObject parent, GameObject child, DNAMonster childDna)
     {
-        //init
-        SoftJointLimit softJointLimit = new SoftJointLimit();
-        SoftJointLimitSpring softJointLimitSpring = new SoftJointLimitSpring();
-        CharacterJoint joint = parent.AddComponent<CharacterJoint>();
-        //general setup
-        joint.autoConfigureConnectedAnchor = true;
-        joint.enableCollision = false;
-        joint.connectedBody = child.GetComponent<Rigidbody>();
-        Vector3 a = childDna.getParentAnchor();
-        Vector3 ps = parent.transform.localScale;
-        Vector3 anchor = new Vector3(a.x * (ps.x/2), a.y * (ps.y/2), a.z * (ps.z/2));
-        joint.anchor = anchor;
-        //configure lowTwistLimit
-        softJointLimit.limit = -1;
-        softJointLimit.bounciness = 0;
-        softJointLimit.contactDistance = 0;
-        joint.lowTwistLimit = softJointLimit;
-        //configure highTwistLimit
-        softJointLimit.limit = 1;
-        softJointLimit.bounciness = 0;
-        softJointLimit.contactDistance = 0;
-        joint.highTwistLimit = softJointLimit;
-        //configure SwingLimitSpring
-        softJointLimitSpring.spring = 40;
-        softJointLimitSpring.damper = 40;
-        joint.swingLimitSpring = softJointLimitSpring;
-        //configure Swing 1 limit
-        softJointLimit.limit = 20;
-        softJointLimit.bounciness = 1;
-        softJointLimit.contactDistance = 0;
-        joint.swing1Limit = softJointLimit;
-        //configure Swing 2 limit
-        softJointLimit.limit = 20;
-        softJointLimit.bounciness = 1;
-        softJointLimit.contactDistance = 0;
-        joint.swing2Limit = softJointLimit;
+        if (childDna.getParentAnchor() != Vector3.zero)
+        {
+            //init
+            SoftJointLimit softJointLimit = new SoftJointLimit();
+            SoftJointLimitSpring softJointLimitSpring = new SoftJointLimitSpring();
+            CharacterJoint joint = parent.AddComponent<CharacterJoint>();
+            //general setup
+            joint.autoConfigureConnectedAnchor = true;
+            joint.enableCollision = false;
+            joint.connectedBody = child.GetComponent<Rigidbody>();
+            Vector3 a = childDna.getParentAnchor();
+            Vector3 ps = parent.transform.localScale;
+            Vector3 anchor = new Vector3(a.x * (ps.x / 2), a.y * (ps.y / 2), a.z * (ps.z / 2));
+            joint.anchor = anchor;
+            //configure lowTwistLimit
+            softJointLimit.limit = -1;
+            softJointLimit.bounciness = 0;
+            softJointLimit.contactDistance = 0;
+            joint.lowTwistLimit = softJointLimit;
+            //configure highTwistLimit
+            softJointLimit.limit = 1;
+            softJointLimit.bounciness = 0;
+            softJointLimit.contactDistance = 0;
+            joint.highTwistLimit = softJointLimit;
+            //configure SwingLimitSpring
+            softJointLimitSpring.spring = 40;
+            softJointLimitSpring.damper = 40;
+            joint.swingLimitSpring = softJointLimitSpring;
+            //configure Swing 1 limit
+            softJointLimit.limit = 20;
+            softJointLimit.bounciness = 1;
+            softJointLimit.contactDistance = 0;
+            joint.swing1Limit = softJointLimit;
+            //configure Swing 2 limit
+            softJointLimit.limit = 20;
+            softJointLimit.bounciness = 1;
+            softJointLimit.contactDistance = 0;
+            joint.swing2Limit = softJointLimit;
+        }
     }
 
     /// <summary>
     /// try to move one monster
     /// </summary>
-    public void run()
+    public void run(float count)
     {
-
+        foreach(GameObject g in go)
+        {
+            g.GetComponent<Rigidbody>().AddTorque(new Vector3(Random.Range(5, 20), Random.Range(-10, 20), Random.Range(-20, 20)));
+        }
     }
 
     //accessors
