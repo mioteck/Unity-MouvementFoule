@@ -2,10 +2,10 @@
 
 
 public class BodyPart{
-    public static int MAX_X = 10;
-    public static int MAX_Y = 10;
-    public static int MAX_Z = 10;
-    public Vector3 size;
+    public static float MAX_X = 1.0f;
+    public static float MAX_Y = 1.0f;
+    public static float MAX_Z = 1.0f;
+    private Vector3 size;
 
     public BodyPart(float x, float y, float z)
     {
@@ -20,5 +20,13 @@ public class BodyPart{
         size.x = bodyPart.size.x;
         size.y = bodyPart.size.y;
         size.z = bodyPart.size.z;
+    }
+    public Vector3 getSize()
+    {
+        return size;
+    }
+    public void setSize(Vector3 newSize)
+    {
+        size = newSize;
     }
 }

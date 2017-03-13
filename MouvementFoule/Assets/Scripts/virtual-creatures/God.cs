@@ -15,7 +15,7 @@ public class God : MonoBehaviour {
 	void Update () {
         if (Input.GetButtonDown("Fire1"))
         {
-            spawnMonster(new Vector3(Random.Range(-50, 50), 0, Random.Range(-50, 50)));
+            spawnMonster(new Vector3(Random.Range(-20, 20), 6, Random.Range(-50, -20)));
         }
     }
 

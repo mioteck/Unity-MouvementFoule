@@ -2,29 +2,37 @@
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+/** 
+ * On connecte les cubes par leurs faces,
+ * Chaque cube à donc au maximum six autres cubes attaché
+ * On identifie les face comme suis : 
+ *      la face +x correspond à la face atteignable par un déplacement positif en X lorsque le cube à une rotation nul
+ *      les autres face sont identifier par -x, +y, -y, +z, -z
+ * Par simplicité la face +x est toujours relié au parent (s'il existe) les autres faces sont connectées aux enfants s'ils existent
+ * */
+
+
 public class Joint : ICloneable
 {
     public BodyPart parent;
     public BodyPart child;
-
     public Vector3 parentAnchor;
-    public Vector3 childAnchor;
+    public Vector3 childAnchor = Vector3.right;
+    
+
 
     public Joint(BodyPart parent, BodyPart child)
     {
         this.parent = parent;
         this.child = child;
-
-        parentAnchor = new Vector3(RandomAnchor(), RandomAnchor(), RandomAnchor());
-        childAnchor = new Vector3(RandomAnchor(), RandomAnchor(), RandomAnchor());
+        parentAnchor = RandomAnchor();
     }
 
-    public Joint(BodyPart parent, BodyPart child, Vector3 parentAnchor, Vector3 childAnchor)
+    public Joint(BodyPart parent, BodyPart child, Vector3 parentAnchor)
     {
         this.parent = parent;
         this.child = child;
         this.parentAnchor = parentAnchor;
-        this.childAnchor = childAnchor;
     }
 
     public Joint(Joint j)
@@ -32,7 +40,6 @@ public class Joint : ICloneable
         parent = new BodyPart(j.parent);
         child = new BodyPart(j.child);
         parentAnchor = j.parentAnchor;
-        childAnchor = j.childAnchor;
     }
 
     public BodyPart GetParent()
@@ -55,19 +62,28 @@ public class Joint : ICloneable
         return childAnchor;
     }
 
-    private float RandomAnchor()
+    private Vector3 RandomAnchor()
     {
-        int val = Random.Range(0, 1);
-        if (val == 0)
+        int val = Random.Range(0, 5);
+        switch (val)
         {
-            return -1;
+            case 0:
+                return Vector3.left;
+            case 1:
+                return Vector3.up;
+            case 2:
+                return Vector3.down;
+            case 3:
+                return Vector3.forward;
+            case 4:
+                return Vector3.back;
+            default:
+                return Vector3.right;
         }
-
-        return 1;
     }
 
     public object Clone()
     {
-        return new Joint(parent, child, parentAnchor, childAnchor);
+        return new Joint(parent, child, parentAnchor);
     }
 }
