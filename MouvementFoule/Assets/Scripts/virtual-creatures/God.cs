@@ -5,6 +5,7 @@ using UnityEngine;
 public class God : MonoBehaviour {
     private GeneticAlgo ga;
     public GameObject GodPrefab;
+    public List<GameObject> monstersGO;
     // Use this for initialization
     void Start () {
         //ga = new GeneticAlgo();
@@ -21,8 +22,6 @@ public class God : MonoBehaviour {
 
     public void spawnMonster(Vector3 location)
     {
-        Instantiate(GodPrefab, location, new Quaternion(0, 0, 0, 0));
-        //temp.transform.Translate(new Vector3(Random.Range(-10, 10), 0, Random.Range(-10, 10)));
-        //gameObject.AddComponent<Monster>();
+        monstersGO.Add(Instantiate(GodPrefab, location, new Quaternion(0, 0, 0, 0)));
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Monster : MonoBehaviour {
+    public static float LifeDuration = 10;
     //cube Prefab
     public GameObject prefab;
     //dna of one monster (use by genetic algorith)
@@ -13,6 +14,7 @@ public class Monster : MonoBehaviour {
     private int id;
     private int score;
     private float count;
+    private float startTime;
     private Vector3 startPos, endPos;
     
 
@@ -20,6 +22,7 @@ public class Monster : MonoBehaviour {
     void Start () {
         id = 0;
         count = 0;
+        startTime = Time.time;
         startPos = gameObject.transform.position;
         dna = new DNAMonster(Vector3.zero, 0);
         go = new GameObject[dna.getSize()];
@@ -27,12 +30,20 @@ public class Monster : MonoBehaviour {
     }
 	
 	// Update is called once per frame
-	void Update () {
-        run(count);
-        count += 0.1f;
-        if(count > 1.0f)
+	void FixedUpdate () {
+        if(Time.time - startTime > LifeDuration)
         {
-            count = 0.0f;
+            //destroy
+            destroyMonster();
+        }
+        else
+        {
+            run(count);
+            count += 0.1f;
+            if (count > 1.0f)
+            {
+                count = 0.0f;
+            }
         }
 	}
 
@@ -145,6 +156,18 @@ public class Monster : MonoBehaviour {
         {
             g.GetComponent<Rigidbody>().AddTorque(new Vector3(Random.Range(5, 20), Random.Range(-10, 20), Random.Range(-20, 20)));
         }
+    }
+
+    /// <summary>
+    /// utility methode for destroying monster
+    /// </summary>
+    public void destroyMonster()
+    {
+        foreach (GameObject g in go)
+        {
+            Destroy(g);
+        }
+        Destroy(this);
     }
 
     //accessors
