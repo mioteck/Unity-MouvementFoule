@@ -9,19 +9,22 @@ public class GeneticAlgo{
     public static int MUTATE_PROBABILITY = 90;
     public static int MUTATE_STRONG = 1;
 
-    private DNAMonster[] population;
-    private DNAMonster[] parentPopulation;
+    private static DNAMonster[] population;
+    private static DNAMonster[] parentPopulation;
+    public static int idInstance;
 
-    public GeneticAlgo()
+
+    public static void initAlgo()
     {
         population = new DNAMonster[POPULATION_SIZE];
         parentPopulation = new DNAMonster[PARENT_POPULATION_SIZE];
+        initialize();
     }
 
     /// <summary>
     /// create the next generation
     /// </summary>
-    public void createOneGeneration()
+    public static void createOneGeneration()
     {
         selection();
         int randMother = 0, randFather = 0;
@@ -38,13 +41,13 @@ public class GeneticAlgo{
     /// <summary>
     /// initialise the population randomly for the first generation of monsters
     /// </summary>
-    public void initialize()
+    public static void initialize()
     {
         for (int i = 0; i < POPULATION_SIZE; ++i)
         {
             population[i] = new DNAMonster(Vector3.zero, 0);
         }
-        for(int i = 0; i<PARENT_POPULATION_SIZE; ++i)
+        for(int i = 0; i < PARENT_POPULATION_SIZE; ++i)
         {
             parentPopulation[i] = new DNAMonster(Vector3.zero, 0);
         }
@@ -53,7 +56,7 @@ public class GeneticAlgo{
     /// <summary>
     /// create parent population regarding to the bests scores
     /// </summary>
-    public void selection()
+    public static void selection()
     {
         for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
         {
@@ -68,7 +71,7 @@ public class GeneticAlgo{
     /// <param name="child"></param>
     /// <param name="mother"></param>
     /// <param name="father"></param>
-    public void crossover(DNAMonster child, DNAMonster mother, DNAMonster father)
+    public static void crossover(DNAMonster child, DNAMonster mother, DNAMonster father)
     {
         int randMother = Random.Range(1, mother.getSize());
         int randFather = Random.Range(1, father.getSize());
@@ -79,7 +82,7 @@ public class GeneticAlgo{
     /// apply a random mutation to a child
     /// </summary>
     /// <param name="child"></param>
-    public void mutate(DNAMonster child)
+    public static void mutate(DNAMonster child)
     {
         for (int i = 0; i < MUTATE_STRONG; ++i)
         {
@@ -95,7 +98,7 @@ public class GeneticAlgo{
     /// return a copy of the best monster of the current génération
     /// </summary>
     /// <returns></returns>
-    public DNAMonster getBestMonster()
+    public static DNAMonster getBestMonster()
     {
         int maxIndex = 0, maxScore = 0;
         for (int j = 0; j < POPULATION_SIZE; j++)
@@ -114,7 +117,7 @@ public class GeneticAlgo{
     /// return the index of the best monster in the population array
     /// </summary>
     /// <returns></returns>
-    public int getBestMonsterIndex()
+    public static int getBestMonsterIndex()
     {
         int maxIndex = 0, maxScore = 0;
         for (int j = 0; j < POPULATION_SIZE; j++)
@@ -126,5 +129,15 @@ public class GeneticAlgo{
             }
         }
         return maxIndex;
+    }
+
+    public static DNAMonster[] getPopulation()
+    {
+        return population;
+    }
+
+    public static void setScore(int posInPopulation, int score)
+    {
+        population[posInPopulation].setScore(score);
     }
 }

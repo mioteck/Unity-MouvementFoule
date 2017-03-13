@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Monster : MonoBehaviour {
+
+    //time of life
     public static float LifeDuration = 10;
     //cube Prefab
     public GameObject prefab;
@@ -10,6 +12,10 @@ public class Monster : MonoBehaviour {
     private DNAMonster dna;
     //list of cube gameobject generate from dna
     private GameObject[] go;
+    //true if monster have been generated
+    private bool isGenerate;
+    //id in population list in genetic algorithm
+    private int agId;
     //others
     private int id;
     private int score;
@@ -20,29 +26,31 @@ public class Monster : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        id = 0;
-        count = 0;
-        startTime = Time.time;
-        startPos = gameObject.transform.position;
-        dna = new DNAMonster(Vector3.zero, 0);
-        go = new GameObject[dna.getSize()];
-        initMonster();
+        isGenerate = false;
+        agId = GeneticAlgo.idInstance;
+        initMonster(GeneticAlgo.getPopulation()[agId]);
+        GeneticAlgo.idInstance++;
     }
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        if(Time.time - startTime > LifeDuration)
+        if (isGenerate)
         {
-            //destroy
-            destroyMonster();
-        }
-        else
-        {
-            run(count);
-            count += 0.1f;
-            if (count > 1.0f)
+            if (Time.time - startTime > LifeDuration)
             {
-                count = 0.0f;
+                endPos = go[0].transform.position;
+                score = (int)Mathf.Sqrt(Mathf.Pow(startPos.x - endPos.x, 2) + Mathf.Pow(startPos.z - endPos.z, 2));
+                GeneticAlgo.setScore(agId, score);
+                destroyMonster();
+            }
+            else
+            {
+                run(count);
+                count += 0.1f;
+                if (count > 1.0f)
+                {
+                    count = 0.0f;
+                }
             }
         }
 	}
@@ -50,8 +58,15 @@ public class Monster : MonoBehaviour {
     /// <summary>
     /// initialise the first cube of the monster and launch the creating process
     /// </summary>
-    public void initMonster()
+    public void initMonster(DNAMonster AGDna)
     {
+        //init var of monster
+        id = 0;
+        count = 0;
+        startTime = Time.time;
+        startPos = gameObject.transform.position;
+        dna = new DNAMonster(AGDna);
+        go = new GameObject[dna.getSize()];
         //need to instanciate the first bodypart 
         go[id] = Instantiate(prefab, startPos, new Quaternion(0, 0, 0, 0));
         go[id].transform.localScale = dna.getBodyPart().getSize();
@@ -63,6 +78,7 @@ public class Monster : MonoBehaviour {
                 createMonster(dna.getChild(i), 0);
             }
         }
+        isGenerate = true;
     }
     /// <summary>
     /// generate all the part of the monster recursively
