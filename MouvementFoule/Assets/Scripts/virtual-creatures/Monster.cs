@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Monster : MonoBehaviour {
+
     //time of life
     public static float LifeDuration = 10;
+    // Physic layer in which the monster is simulated
+    public int physxLayer;
     //cube Prefab
     public GameObject prefab;
     //dna of one monster (use by genetic algorith)
@@ -68,6 +71,7 @@ public class Monster : MonoBehaviour {
         go = new GameObject[dna.getSize()];
         //need to instanciate the first bodypart 
         go[id] = Instantiate(prefab, startPos, new Quaternion(0, 0, 0, 0));
+        go[id].layer = physxLayer;
         go[id].transform.localScale = dna.getBodyPart().getSize();
         if (dna.getChildren() != null)
         {
@@ -113,6 +117,7 @@ public class Monster : MonoBehaviour {
         Vector3 childWorldLocation = parent.transform.position + new Vector3(a.x* ((cs.x + ps.x) / 2), a.y* ((cs.y + ps.y) / 2), a.z* ((cs.z + ps.z) / 2));
         //instanciation du monstre
         go[id] = Instantiate(prefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
+        go[id].layer = physxLayer;
         go[id].transform.position = childWorldLocation;
         go[id].transform.localScale = cs;
     }

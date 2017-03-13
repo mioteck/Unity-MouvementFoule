@@ -12,10 +12,8 @@ public class God : MonoBehaviour {
         tempTime = Time.time;
         GeneticAlgo.idInstance = 0;
         GeneticAlgo.initAlgo();
-        for(int i = 0; i < GeneticAlgo.POPULATION_SIZE; i++)
-        {
-            spawnMonster(new Vector3(8 * (i - GeneticAlgo.POPULATION_SIZE / 2), 5, -30));
-        }
+
+        spawnPopulation(GeneticAlgo.POPULATION_SIZE);
         tempTime = Time.time;
     }
 	
@@ -30,16 +28,28 @@ public class God : MonoBehaviour {
             monstersGO.Clear();
             GeneticAlgo.idInstance = 0;
             GeneticAlgo.createOneGeneration();
-            for (int i = 0; i < GeneticAlgo.POPULATION_SIZE; i++)
-            {
-                spawnMonster(new Vector3(8 * (i - GeneticAlgo.POPULATION_SIZE / 2), 5, -30));
-            }
+
+            spawnPopulation(GeneticAlgo.POPULATION_SIZE);
             tempTime = Time.time;
         }
     }
 
-    public void spawnMonster(Vector3 location)
+    // Spawn the entire population of monster
+    void spawnPopulation(int populationSize)
     {
-        monstersGO.Add(Instantiate(GodPrefab, location, new Quaternion(0, 0, 0, 0)));
+        int currentLayer = LayerMask.NameToLayer("physx1");
+        for (int i = 0; i < populationSize; i++)
+        {
+            spawnMonster(new Vector3(8 * (i - GeneticAlgo.POPULATION_SIZE / 2), 5, -30), currentLayer);
+            currentLayer++;
+        }
+    }
+
+    public void spawnMonster(Vector3 location, int physxLayer)
+    {
+        GameObject monster = Instantiate(GodPrefab, location, new Quaternion(0, 0, 0, 0));
+        Monster monsterComponent = monster.GetComponent<Monster>();
+        monsterComponent.physxLayer = physxLayer;
+        monstersGO.Add(monster);
     }
 }
