@@ -6,8 +6,6 @@ public class Monster : MonoBehaviour {
 
     //time of life
     public static float LifeDuration = 10;
-    // Physic layer in which the monster is simulated
-    public int physxLayer;
     //cube Prefab
     public GameObject prefab;
     //dna of one monster (use by genetic algorith)
@@ -16,22 +14,20 @@ public class Monster : MonoBehaviour {
     private GameObject[] go;
     //true if monster have been generated
     private bool isGenerate;
-    //id in population list in genetic algorithm
-    private int agId;
+    // Physic layer in which the monster is simulated
+    private int physxLayer;
     //others
     private int id;
-    private int score;
     private float count;
     private float startTime;
-    private Vector3 startPos, endPos;
+    private Vector3 startPos;
     
 
     // Use this for initialization
-    void Start () {
+
+    void Awake()
+    {
         isGenerate = false;
-        agId = GeneticAlgo.idInstance;
-        initMonster(GeneticAlgo.getPopulation()[agId]);
-        GeneticAlgo.idInstance++;
     }
 	
 	// Update is called once per frame
@@ -40,10 +36,11 @@ public class Monster : MonoBehaviour {
         {
             if (Time.time - startTime > LifeDuration)
             {
-                endPos = go[0].transform.position;
-                score = (int)Mathf.Sqrt(Mathf.Pow(startPos.x - endPos.x, 2) + Mathf.Pow(startPos.z - endPos.z, 2));
-                GeneticAlgo.setScore(agId, score);
-                destroyMonster();
+                for (int i = 0; i < go.Length; i++)
+                {
+                    go[i].SetActive(false);
+                }
+                gameObject.SetActive(false);
             }
             else
             {
@@ -60,8 +57,9 @@ public class Monster : MonoBehaviour {
     /// <summary>
     /// initialise the first cube of the monster and launch the creating process
     /// </summary>
-    public void initMonster(DNAMonster AGDna)
+    public void initMonster(DNAMonster AGDna, int physxLayer)
     {
+        this.physxLayer = physxLayer;
         //init var of monster
         id = 0;
         count = 0;
@@ -191,14 +189,6 @@ public class Monster : MonoBehaviour {
     }
 
     //accessors
-    public int getScore()
-    {
-        return score;
-    }
-    public void setScore(int newScore)
-    {
-        score = newScore;
-    }
     public DNAMonster getDna()
     {
         return dna;
@@ -206,5 +196,15 @@ public class Monster : MonoBehaviour {
     public void setDna(DNAMonster newDna)
     {
         dna = newDna;
+    }
+
+    public Vector3 getPosition()
+    {
+        return go[0].transform.position;
+    }
+
+    public Vector3 getStartPos()
+    {
+        return startPos;
     }
 }
