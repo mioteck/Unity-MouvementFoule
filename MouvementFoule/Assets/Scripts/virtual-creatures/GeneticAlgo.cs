@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class GeneticAlgo{
     public static int POPULATION_SIZE = 10;
-    //public static int NB_GENERATION = 2;
     public static int PARENT_POPULATION_SIZE = 2;
     public static int MUTATE_PROBABILITY = 90;
-    public static int MUTATE_STRONG = 1;
+
 
     private static DNAMonster[] population;
     private static DNAMonster[] parentPopulation;
@@ -27,16 +26,8 @@ public class GeneticAlgo{
     public static void createOneGeneration()
     {
         selection();
-        int randMother = 0, randFather = 0;
-        for (int i = 0; i < POPULATION_SIZE; i++)
-        {
-            randMother = Random.Range(0, PARENT_POPULATION_SIZE);
-            randFather = Random.Range(0, PARENT_POPULATION_SIZE);
-            //crossover
-            crossover(population[i], parentPopulation[randMother], parentPopulation[randFather]);
-            //mutate
-            mutate(population[i]);
-        }
+        crossover();
+        mutate();
     }
     /// <summary>
     /// initialise the population randomly for the first generation of monsters
@@ -71,26 +62,31 @@ public class GeneticAlgo{
     /// <param name="child"></param>
     /// <param name="mother"></param>
     /// <param name="father"></param>
-    public static void crossover(DNAMonster child, DNAMonster mother, DNAMonster father)
+    public static void crossover()
     {
-        int randMother = Random.Range(1, mother.getSize()+1);
-        int randFather = Random.Range(1, father.getSize()+1);
-        child = new DNAMonster(mother);
-        child.setSubDna(father.getSubDna(randFather), randMother);
+        for (int i = 0; i < POPULATION_SIZE; i++)
+        {
+            int randMother = Random.Range(0, PARENT_POPULATION_SIZE);
+            int randFather = Random.Range(0, PARENT_POPULATION_SIZE);
+            int randNodeMother = Random.Range(1, parentPopulation[randMother].getSize() + 1);
+            int randNodeFather = Random.Range(1, parentPopulation[randFather].getSize() + 1);
+            population[i] = new DNAMonster(parentPopulation[randMother]);
+            population[i].setSubDna(parentPopulation[randFather].getSubDna(randNodeFather), randNodeMother);
+        }
     }
     /// <summary>
     /// apply a random mutation to a child
     /// </summary>
     /// <param name="child"></param>
-    public static void mutate(DNAMonster child)
+    public static void mutate()
     {
-        for (int i = 0; i < MUTATE_STRONG; ++i)
+        for (int i = 0; i < POPULATION_SIZE; i++)
         {
             int rand = Random.Range(1, 101);
             if (rand <= MUTATE_PROBABILITY)
             {
-                int rand2 = Random.Range(1, child.getSize()+1);
-                child.setSubDna(new DNAMonster(Vector3.zero, 0), rand2);
+                int rand2 = Random.Range(1, population[i].getSize() + 1);
+                population[i].setSubDna(new DNAMonster(Vector3.zero, 0), rand2);
             }
         }
     }

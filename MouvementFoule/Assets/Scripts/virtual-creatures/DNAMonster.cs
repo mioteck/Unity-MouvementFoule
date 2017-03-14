@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 public class DNAMonster{
-    public static int MAX_DEPTH = 4;
+    public static int MAX_DEPTH = 5;
     public static int MAX_CHILDREN = 2; //<=5 un cube n'a que 6 face!!!!! il faut garder un slot pour le parent
     private BodyPart bodyPart;
     private DNAMonster[] children;
@@ -20,6 +20,10 @@ public class DNAMonster{
         if(depth < MAX_DEPTH)
         {
             int rand = Random.Range(0, MAX_CHILDREN);
+            if (depth <= 1)
+            {
+                rand = Random.Range(1, MAX_CHILDREN);
+            }
             children = new DNAMonster[rand];
             anchor = new Vector3[rand];
             createAnchor(rand);

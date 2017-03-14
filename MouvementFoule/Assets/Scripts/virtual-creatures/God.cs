@@ -12,7 +12,6 @@ public class God : MonoBehaviour {
     void Start () {
         GeneticAlgo.idInstance = 0;
         GeneticAlgo.initAlgo();
-
         spawnPopulation(GeneticAlgo.POPULATION_SIZE);
         tempTime = Time.time;
     }
