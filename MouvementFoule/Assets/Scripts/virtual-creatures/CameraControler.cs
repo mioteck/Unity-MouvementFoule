@@ -3,43 +3,46 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraControler : MonoBehaviour {
-    public float moveSpeed = 0.005f;
-    public float altitude = 0;
-    public float speedH = 3.0f;
-    public float speedV = 3.0f;
-    private float yaw = 0.0f;
-    private float pitch = 30.0f;
+
+    public float speedMove;
+
+    private float right;
+    private float left;
+    private float up;
+    private float down;
 
     void Start()
     {
-        altitude = gameObject.transform.position.y;
+        right = Screen.width * 0.9f;
+        left = Screen.width * 0.1f;
+        up = Screen.height * 0.9f;
+        down = Screen.height * 0.1f;
     }
 
     void Update()
     {
-        if (Input.GetMouseButton(0))
+        Vector3 mousePosition = Input.mousePosition;
+        Debug.Log(mousePosition);
+        if(mousePosition.y >= up)
         {
-            yaw += speedH * Input.GetAxis("Mouse X");
-            pitch -= speedV * Input.GetAxis("Mouse Y");
-            transform.eulerAngles = new Vector3(pitch, yaw, 0.0f);
+            Debug.Log("Up");
+            transform.Translate(Vector3.up * speedMove * Time.deltaTime);
         }
-        if (Input.GetKey(KeyCode.Z))
+        if (mousePosition.y <= down)
         {
-            gameObject.transform.Translate(moveSpeed * Vector3.forward, Space.Self);
+            Debug.Log("Down");
+            transform.Translate(Vector3.down * speedMove * Time.deltaTime);
         }
-        if (Input.GetKey(KeyCode.S))
+        if (mousePosition.x <= left)
         {
-            gameObject.transform.Translate(moveSpeed * Vector3.back, Space.Self);
+            Debug.Log("Left");
+            transform.Translate(Vector3.left * speedMove * Time.deltaTime);
         }
-        if (Input.GetKey(KeyCode.Q))
+        if (mousePosition.x >= right)
         {
-            gameObject.transform.Translate(moveSpeed * Vector3.left, Space.Self);
+            Debug.Log("Right");
+            transform.Translate(Vector3.right * speedMove * Time.deltaTime);
         }
-        if (Input.GetKey(KeyCode.D))
-        {
-            gameObject.transform.Translate(moveSpeed * Vector3.right, Space.Self);
-        }
-        gameObject.transform.position = new Vector3(gameObject.transform.position.x, altitude, gameObject.transform.position.z);
     }
 
 }
