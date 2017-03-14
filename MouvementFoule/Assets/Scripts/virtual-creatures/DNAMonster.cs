@@ -11,12 +11,14 @@ public class DNAMonster{
     private DNAMonster[] children;
     private Vector3[] anchor;
     private Vector3 parentAnchor;
+    private MoveAction action;
     private int score = 0;
 
     public DNAMonster(Vector3 parentAnchor, int depth = 0)
     {
         bodyPart = new BodyPart();
         this.parentAnchor = parentAnchor;
+        action = new MoveAction();
         ++depth;
         if(depth <= MAX_DEPTH)
         {
@@ -50,6 +52,7 @@ public class DNAMonster{
     {
         bodyPart = dna.bodyPart;
         parentAnchor = dna.parentAnchor;
+        action = dna.action;
         if (dna.children != null)
         {
             children = new DNAMonster[dna.children.Length];
@@ -253,7 +256,14 @@ public class DNAMonster{
     {
         score = newScore;
     }
-
+    public MoveAction getAction()
+    {
+        return action;
+    }
+    public void setAction(MoveAction newAction)
+    {
+        action = newAction;
+    }
     /// <summary>
     /// return the correct node in position "pos" : pos range = (1, dna.getSize())
     /// </summary>
