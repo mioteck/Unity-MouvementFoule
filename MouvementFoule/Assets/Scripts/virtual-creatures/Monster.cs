@@ -190,10 +190,10 @@ public class Monster : MonoBehaviour {
             switch (count % 2)
             {
                 case 0:
-                    g.GetComponent<Rigidbody>().AddTorque(new Vector3(10, 0, 0));
+                    g.GetComponent<Rigidbody>().AddTorque(new Vector3(15, 0, 0));
                     break;
                 case 1:
-                    g.GetComponent<Rigidbody>().AddForce(new Vector3(0, 0, 3));
+                    g.GetComponent<Rigidbody>().AddForce(new Vector3(0, 0, 2));
                     break;
                 default:
                     break;

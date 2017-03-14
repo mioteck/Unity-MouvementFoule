@@ -14,6 +14,9 @@ public class MoveAction{
     public List<int> power = new List<int>();
     public List<Vector3> axe = new List<Vector3>();
 
+    /// <summary>
+    /// default constructor, create a randomize MoveAction
+    /// </summary>
     public MoveAction()
     {
         int nbAction = Random.Range(0, MAX_ACTION);
@@ -33,7 +36,26 @@ public class MoveAction{
             }
         }
     }
-    
+    /// <summary>
+    /// copy constructor
+    /// </summary>
+    /// <param name="copy"></param>
+    public MoveAction(MoveAction copy)
+    {
+        foreach(ActionType a in copy.action)
+        {
+            action.Add(a);
+        }
+        foreach (int p in copy.power)
+        {
+            power.Add(p);
+        }
+        foreach (Vector3 a in copy.axe)
+        {
+            axe.Add(a);
+        }
+    }
+
     /// <summary>
     /// return the torque to apply on time t
     /// </summary>
