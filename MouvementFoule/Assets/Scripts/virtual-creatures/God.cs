@@ -9,7 +9,6 @@ public class God : MonoBehaviour {
     public List<GameObject> monstersGO;
     // Use this for initialization
     void Start () {
-        tempTime = Time.time;
         GeneticAlgo.idInstance = 0;
         GeneticAlgo.initAlgo();
         for(int i = 0; i < GeneticAlgo.POPULATION_SIZE; i++)

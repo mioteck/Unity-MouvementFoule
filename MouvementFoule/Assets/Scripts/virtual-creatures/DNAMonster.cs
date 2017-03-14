@@ -4,8 +4,8 @@ using UnityEngine;
 
 
 public class DNAMonster{
-    public static int MAX_DEPTH = 3;
-    public static int MAX_CHILDREN = 3; //<5 un cube n'a que 6 face!!!!!
+    public static int MAX_DEPTH = 4;
+    public static int MAX_CHILDREN = 2; //<=5 un cube n'a que 6 face!!!!! il faut garder un slot pour le parent
     private BodyPart bodyPart;
     private DNAMonster[] children;
     private Vector3[] anchor;
@@ -19,7 +19,7 @@ public class DNAMonster{
         ++depth;
         if(depth < MAX_DEPTH)
         {
-            int rand = Random.Range(1, MAX_CHILDREN+1);
+            int rand = Random.Range(0, MAX_CHILDREN);
             children = new DNAMonster[rand];
             anchor = new Vector3[rand];
             createAnchor(rand);
@@ -45,7 +45,6 @@ public class DNAMonster{
             }
         }
     }
-
 
     public void createAnchor(int size)
     {
@@ -114,6 +113,10 @@ public class DNAMonster{
     {
         return new Vector3(-a.x, -a.y, -a.z);
     }
+    public void checkAnchor()
+    {
+
+    }
 
     public int getSize()
     {
@@ -144,83 +147,20 @@ public class DNAMonster{
     {
         return anchor;
     }
-    public void setAnchor(Vector3[] newAnchor)
+    public void setAnchorI(Vector3 newAnchor, int pos)
     {
-        anchor = newAnchor;
+        anchor[pos] = newAnchor;
+        children[pos].setParentAnchor(newAnchor);
     }
     public Vector3 getParentAnchor()
     {
         return parentAnchor;
     }
-    public void setParentAnchor(Vector3 newParentAnchor)
+    private void setParentAnchor(Vector3 newParentAnchor)
     {
         parentAnchor = newParentAnchor;
     } 
 
-    public DNAMonster getSubDna(int i)
-    {
-        i++;
-        DNAMonster temp = new DNAMonster(Vector3.zero);
-        getNode(temp, ref i);
-        return temp;
-    }
-    public void setSubDna(DNAMonster temp, int i)
-    {
-        i++;
-        setNode(temp, ref i);
-    }
-    private void getNode(DNAMonster nodeI, ref int pos)
-    {
-        --pos;
-        if (pos == 0)
-        {
-            nodeI = new DNAMonster(this);
-            /*nodeI.bodyPart = bodyPart;
-            nodeI.children = null;
-            if (children != null)
-            {
-                nodeI.children = new DNAMonster[children.Length];
-                for (int i = 0; i < children.Length; ++i)
-                {
-                    nodeI.children[i] = new DNAMonster(children[i]);
-                }
-            }*/
-        }
-        else if (pos > 0 && children != null)
-        {
-            for (int i = 0; i < children.Length; ++i)
-            {
-                children[i].getNode(nodeI, ref pos);
-            }
-        }
-    }
-    private void setNode(DNAMonster newNode, ref int pos)
-    {
-        --pos;
-        if (pos == 0)
-        {
-            bodyPart = newNode.bodyPart;
-            parentAnchor = newNode.parentAnchor;
-            children = null;
-            if (newNode.children != null)
-            {
-                children = new DNAMonster[newNode.children.Length];
-                anchor = new Vector3[newNode.anchor.Length];
-                for (int i = 0; i < newNode.children.Length; ++i)
-                {
-                    children[i] = new DNAMonster(newNode.children[i]);
-                    anchor[i] = newNode.anchor[i];
-                }
-            }
-        }
-        else if (pos > 0 && children != null)
-        {
-            for (int i = 0; i < children.Length; ++i)
-            {
-                children[i].setNode(newNode, ref pos);
-            }
-        }
-    }
     public int getScore()
     {
         return score;
@@ -229,4 +169,62 @@ public class DNAMonster{
     {
         score = newScore;
     }
+
+
+    public DNAMonster getSubDna(int pos, DNAMonster subDna = null)
+    {
+        --pos;
+        if (pos < 0 && subDna == null)
+        {
+            Debug.Log("Error in DNAMonster.getSubDna()");
+            return null;
+        }
+        else if(subDna != null)
+        {
+            return subDna;
+        }
+        else if (children != null)
+        {
+            for (int i = 0; i < children.Length; ++i)
+            {
+                if(pos - i == 0)
+                {
+                    subDna = children[i];
+                    return subDna;
+                }
+            }
+            pos -= (children.Length-1);
+            for (int i = 0; i < children.Length; ++i)
+            {
+                subDna = children[i].getSubDna(pos - i, subDna);
+                if(subDna != null)
+                {
+                    return subDna;
+                }
+            }
+        }
+        return subDna;
+    }
+    public void setSubDna(DNAMonster subDna, int pos)
+    {
+        --pos;
+        if (pos > 0 && children != null)
+        {
+            for (int i = 0; i < children.Length; ++i)
+            {
+                if (pos - i == 0)
+                {
+                    children[i] = new DNAMonster(subDna);
+                    anchor[i] = children[i].parentAnchor;
+                    checkAnchor();
+                }
+            }
+            pos -= (children.Length - 1);
+            for (int i = 0; i < children.Length; ++i)
+            {
+                children[i].setSubDna(subDna, pos - i);
+            }
+        }
+    }
+
 }

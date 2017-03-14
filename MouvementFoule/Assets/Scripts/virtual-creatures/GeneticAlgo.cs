@@ -73,9 +73,9 @@ public class GeneticAlgo{
     /// <param name="father"></param>
     public static void crossover(DNAMonster child, DNAMonster mother, DNAMonster father)
     {
-        int randMother = Random.Range(1, mother.getSize());
-        int randFather = Random.Range(1, father.getSize());
-        child = mother;
+        int randMother = Random.Range(1, mother.getSize()+1);
+        int randFather = Random.Range(1, father.getSize()+1);
+        child = new DNAMonster(mother);
         child.setSubDna(father.getSubDna(randFather), randMother);
     }
     /// <summary>
@@ -89,8 +89,8 @@ public class GeneticAlgo{
             int rand = Random.Range(1, 101);
             if (rand <= MUTATE_PROBABILITY)
             {
-                int rand2 = Random.Range(1, child.getSize());
-                child.setSubDna(new DNAMonster(Vector3.zero, 0).getSubDna(1), rand2);
+                int rand2 = Random.Range(1, child.getSize()+1);
+                child.setSubDna(new DNAMonster(Vector3.zero, 0), rand2);
             }
         }
     }
