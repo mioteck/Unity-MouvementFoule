@@ -76,7 +76,7 @@ public class Monster : MonoBehaviour {
             int nbChildren = dna.getChildren().Length;
             for (int i = 0; i < nbChildren; ++i)
             {
-                createMonster(dna.getChild(i), 0);
+                createMonster(dna.getChildren()[i], 0);
             }
         }
         isGenerate = true;
@@ -96,7 +96,7 @@ public class Monster : MonoBehaviour {
             int nbChildren = subDna.getChildren().Length;
             for (int i = 0; i < nbChildren; ++i)
             {
-                createMonster(subDna.getChild(i), tempID);
+                createMonster(subDna.getChildren()[i], tempID);
             }
         }
     }

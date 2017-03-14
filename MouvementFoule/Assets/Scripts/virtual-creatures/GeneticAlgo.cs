@@ -5,7 +5,7 @@ using UnityEngine;
 public class GeneticAlgo{
     public static int POPULATION_SIZE = 100;
     public static int PARENT_POPULATION_SIZE = 10;
-    public static int MUTATE_PROBABILITY = 90;
+    public static int MUTATE_PROBABILITY = 5;
 
 
     private static DNAMonster[] population;
@@ -49,14 +49,6 @@ public class GeneticAlgo{
     /// </summary>
     public static void selection()
     {
-        /*
-        for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
-        {
-            int best = getBestMonsterIndex();
-            parentPopulation[i] = new DNAMonster(population[best]);
-            population[best].setScore(0);
-        }
-        */
         int[,] bests = getBestMonsterIndexOrder();
         int totalScore = 0;
         for (int i = 0; i < POPULATION_SIZE; ++i)
@@ -87,10 +79,10 @@ public class GeneticAlgo{
         {
             int randMother = Random.Range(0, PARENT_POPULATION_SIZE);
             int randFather = Random.Range(0, PARENT_POPULATION_SIZE);
-            int randNodeMother = Random.Range(1, parentPopulation[randMother].getSize() + 1);
-            int randNodeFather = Random.Range(1, parentPopulation[randFather].getSize() + 1);
+            //on récupère un bodypart aléatoire contenu dans le pere et dans la mere et on change sa taille par celle du pere
+            int randNode = Random.Range(1, Mathf.Min(parentPopulation[randMother].getSize(), parentPopulation[randFather].getSize()));
             population[i] = new DNAMonster(parentPopulation[randMother]);
-            population[i].setSubDna(parentPopulation[randFather].getSubDna(randNodeFather), randNodeMother);
+            population[i].getSubDna(randNode).getBodyPart().setSize(parentPopulation[randFather].getSubDna(randNode).getBodyPart().getSize());
         }
     }
     /// <summary>
@@ -104,8 +96,10 @@ public class GeneticAlgo{
             int rand = Random.Range(1, 101);
             if (rand <= MUTATE_PROBABILITY)
             {
-                int rand2 = Random.Range(1, population[i].getSize() + 1);
-                population[i].setSubDna(new DNAMonster(Vector3.zero, 0), rand2);
+                //on ajoute un enfant à la position aléatoire tiré
+                int rand2 = Random.Range(1, population[i].getSize());
+                //population[i].addOneBodypart(rand2);
+                population[i].getSubDna(rand2).addOneBodypart();
             }
         }
     }
