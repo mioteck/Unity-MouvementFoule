@@ -185,20 +185,29 @@ public class Monster : MonoBehaviour {
     /// </summary>
     public void run(int count)
     {
-        foreach(GameObject g in go)
+        int i = 1;
+        foreach (GameObject g in go)
         {
-            switch (count % 2)
+
+            if (i < dna.getSize())
+            {
+                Vector3 torque = dna.getSubDna(i).getAction().getComputeTorque(count / 10);
+                if (torque != Vector3.zero)
+                    g.GetComponent<Rigidbody>().AddTorque(torque);
+                i++;
+            }
+            /*switch (count % 2)
             {
                 case 0:
-                    g.GetComponent<Rigidbody>().AddTorque(new Vector3(10, 0, 0));
+                    g.GetComponent<Rigidbody>().AddTorque(new Vector3(15, 0, 0));
                     break;
                 case 1:
-                    g.GetComponent<Rigidbody>().AddForce(new Vector3(0, 0, 3));
+                    g.GetComponent<Rigidbody>().AddForce(new Vector3(0, 0, 2));
                     break;
                 default:
                     break;
-            }
-            
+            }*/
+
         }
     }
 
