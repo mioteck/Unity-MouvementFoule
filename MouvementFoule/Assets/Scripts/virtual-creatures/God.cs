@@ -12,7 +12,7 @@ public class God : MonoBehaviour {
     void Start () {
         GeneticAlgo.idInstance = 0;
         GeneticAlgo.initAlgo();
-        spawnPopulation(GeneticAlgo.POPULATION_SIZE);
+        spawnPopulation();
         tempTime = Time.time;
     }
 	
@@ -32,7 +32,7 @@ public class God : MonoBehaviour {
             GeneticAlgo.idInstance = 0;
             GeneticAlgo.createOneGeneration();
 
-            spawnPopulation(GeneticAlgo.POPULATION_SIZE);
+            spawnPopulation();
             tempTime = Time.time;
         }
     }
@@ -53,15 +53,19 @@ public class God : MonoBehaviour {
     }
 
     // Spawn the entire population of monster
-    void spawnPopulation(int populationSize)
+    void spawnPopulation()
     {
         GeneticAlgo.idInstance = 0;
         int currentLayer = LayerMask.NameToLayer("physx1");
-        for (int i = 0; i < populationSize; i++)
+        for (int i = 0; i < GeneticAlgo.POPULATION_SIZE; i++)
         {
             DNAMonster dna = GeneticAlgo.getPopulation()[GeneticAlgo.idInstance];
-            spawnMonster(new Vector3(8 * (i - GeneticAlgo.POPULATION_SIZE / 2), 5, -30), currentLayer, dna);
+            spawnMonster(new Vector3(8 * (i - GeneticAlgo.POPULATION_SIZE / 2), 5, -35), currentLayer, dna);
             currentLayer++;
+            if (currentLayer > 30)
+            {
+                currentLayer = LayerMask.NameToLayer("physx1");
+            }
             GeneticAlgo.idInstance++;
         }
     }

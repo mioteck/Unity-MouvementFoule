@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GeneticAlgo{
-    public static int POPULATION_SIZE = 10;
-    public static int PARENT_POPULATION_SIZE = 2;
+    public static int POPULATION_SIZE = 100;
+    public static int PARENT_POPULATION_SIZE = 10;
     public static int MUTATE_PROBABILITY = 90;
 
 
@@ -49,11 +49,30 @@ public class GeneticAlgo{
     /// </summary>
     public static void selection()
     {
+        /*
         for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
         {
             int best = getBestMonsterIndex();
             parentPopulation[i] = new DNAMonster(population[best]);
             population[best].setScore(0);
+        }
+        */
+        int[,] bests = getBestMonsterIndexOrder();
+        int totalScore = 0;
+        for (int i = 0; i < POPULATION_SIZE; ++i)
+        {
+            totalScore += bests[0, i];
+        }
+        for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
+        {
+            int temp = Random.Range(0, totalScore);
+            int j = 0;
+            while(temp >= 0)
+            {
+                temp -= bests[0, j];
+                j++;
+            }
+            parentPopulation[i] = new DNAMonster(population[bests[j-1,0]]);
         }
     }
     /// <summary>
@@ -108,6 +127,21 @@ public class GeneticAlgo{
         DNAMonster res = new DNAMonster(population[maxIndex]);
         res.setScore(population[maxIndex].getScore());
         return res;
+    }
+    /// <summary>
+    /// return two dimentionnal array wich contains ordered index of best score in [i,0] and associate score in [0,i]
+    /// </summary>
+    /// <returns></returns>
+    public static int[,] getBestMonsterIndexOrder()
+    {
+        int[,] score = new int[POPULATION_SIZE,POPULATION_SIZE];
+        for (int i = 0; i < POPULATION_SIZE; i++)
+        {
+            score[i, 0] = getBestMonsterIndex();
+            score[0, i] = population[score[i, 0]].getScore();
+            population[score[i, 0]].setScore(0);
+        }
+        return score;
     }
     /// <summary>
     /// return the index of the best monster in the population array
