@@ -60,7 +60,7 @@ public class God : MonoBehaviour {
         for (int i = 0; i < GeneticAlgo.POPULATION_SIZE; i++)
         {
             DNAMonster dna = GeneticAlgo.getPopulation()[GeneticAlgo.idInstance];
-            spawnMonster(new Vector3(8 * (i - GeneticAlgo.POPULATION_SIZE / 2), 5, -35), currentLayer, dna);
+            spawnMonster(new Vector3(8 * (i - GeneticAlgo.POPULATION_SIZE / 2), 5, -235), currentLayer, dna);
             currentLayer++;
             if (currentLayer > 30)
             {
