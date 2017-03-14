@@ -42,12 +42,19 @@ public class God : MonoBehaviour {
         for (int i = 0; i < GeneticAlgo.POPULATION_SIZE; i++)
         {
             Monster monster = monstersComponent[i];
-            Vector3 startPos = monster.getStartPos();
-            Vector3 endPos = monster.getPosition();
+            int score;
+            if (monster.isBroken)
+            {
+                score = 0;
+            }
+            else
+            {
+                Vector3 startPos = monster.getStartPos();
+                Vector3 endPos = monster.getPosition();
 
-            int score = (int)Mathf.Sqrt(Mathf.Pow(startPos.x - endPos.x, 2) + Mathf.Pow(startPos.z - endPos.z, 2));
-            GeneticAlgo.getPopulation()[i].setScore(score);
-            //monster.getDna().setScore(score);
+                score = (int)Mathf.Sqrt(Mathf.Pow(startPos.x - endPos.x, 2) + Mathf.Pow(startPos.z - endPos.z, 2));
+                GeneticAlgo.getPopulation()[i].setScore(score);
+            }
             monster.destroyMonster();
         }
     }
