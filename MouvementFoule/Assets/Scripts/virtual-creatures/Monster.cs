@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Monster : MonoBehaviour {
-
     //time of life
     public static float LifeDuration = 10;
     //cube Prefab
@@ -21,10 +20,8 @@ public class Monster : MonoBehaviour {
     private int count;
     private float startTime;
     private Vector3 startPos;
-    
 
     // Use this for initialization
-
     void Awake()
     {
         isGenerate = false;
