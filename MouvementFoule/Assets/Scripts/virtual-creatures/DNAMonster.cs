@@ -4,8 +4,9 @@ using UnityEngine;
 
 
 public class DNAMonster{
-    public static int MAX_DEPTH = 1;
-    public static int MAX_CHILDREN = 1; //<=5 un cube n'a que 6 face!!!!! il faut garder un slot pour le parent
+    public static int [] NB_CHILDREN_CHANCE = { 20, 70, 10, 0, 0, 0 };//% de chance d'avoir 0, 1, 2, 3, 4, 5 enfants
+    public static int MAX_DEPTH = 2;
+    public static int MAX_CHILDREN = 2; //<=5 un cube n'a que 6 face!!!!! il faut garder un slot pour le parent
     private BodyPart bodyPart;
     private DNAMonster[] children;
     private Vector3[] anchor;
@@ -19,15 +20,26 @@ public class DNAMonster{
         ++depth;
         if(depth <= MAX_DEPTH)
         {
-            int rand = Random.Range(0, MAX_CHILDREN);
-            if (depth <= 1)
-            {
-                rand = Random.Range(1, MAX_CHILDREN);
-            }
-            children = new DNAMonster[rand];
-            anchor = new Vector3[rand];
-            createAnchor(rand);
-            for (int i = 0; i < rand; ++i)
+            int rand = Random.Range(1, 101);
+            int nbChildren = 0;
+            if (depth > 1 && rand <= NB_CHILDREN_CHANCE[0])
+                nbChildren = 0;
+            else if (rand <= NB_CHILDREN_CHANCE[1] + NB_CHILDREN_CHANCE[0])
+                nbChildren = 1;
+            else if (rand <= NB_CHILDREN_CHANCE[2] + NB_CHILDREN_CHANCE[1] + NB_CHILDREN_CHANCE[0])
+                nbChildren = 2;
+            else if (rand <= NB_CHILDREN_CHANCE[3] + NB_CHILDREN_CHANCE[2] + NB_CHILDREN_CHANCE[1] + NB_CHILDREN_CHANCE[0])
+                nbChildren = 3;
+            else if (rand <= NB_CHILDREN_CHANCE[4] + NB_CHILDREN_CHANCE[3] + NB_CHILDREN_CHANCE[2] + NB_CHILDREN_CHANCE[1] + NB_CHILDREN_CHANCE[0])
+                nbChildren = 4;
+            else if (rand <= NB_CHILDREN_CHANCE[5] + NB_CHILDREN_CHANCE[4] + NB_CHILDREN_CHANCE[3] + NB_CHILDREN_CHANCE[2] + NB_CHILDREN_CHANCE[1] + NB_CHILDREN_CHANCE[0])
+                nbChildren = 5;
+            else
+                Debug.Log("ERROR in DNAMonster constructor");
+            children = new DNAMonster[nbChildren];
+            anchor = new Vector3[nbChildren];
+            createAnchor(nbChildren);
+            for (int i = 0; i < nbChildren; ++i)
             {
                 children[i] = new DNAMonster(anchor[i], depth);
             }
@@ -149,7 +161,7 @@ public class DNAMonster{
         {
             cLength = children.Length - 1;
             aLength = anchor.Length - 1;
-            if (cLength == 0)
+            if (cLength <= 0)
             {
                 children = null;
                 anchor = null;

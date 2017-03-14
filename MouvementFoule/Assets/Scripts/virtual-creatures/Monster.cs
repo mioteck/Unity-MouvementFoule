@@ -162,6 +162,9 @@ public class Monster : MonoBehaviour {
             softJointLimit.bounciness = 1;
             softJointLimit.contactDistance = 0;
             joint.swing2Limit = softJointLimit;
+            //configure resistance of the joint
+            joint.breakForce = 7500;
+            joint.breakForce = 7500;
         }
     }
 
@@ -178,7 +181,7 @@ public class Monster : MonoBehaviour {
                     g.GetComponent<Rigidbody>().AddTorque(new Vector3(10, 0, 0));
                     break;
                 case 1:
-                    g.GetComponent<Rigidbody>().AddForce(new Vector3(0, 0, 5));
+                    g.GetComponent<Rigidbody>().AddForce(new Vector3(0, 0, 3));
                     break;
                 default:
                     break;

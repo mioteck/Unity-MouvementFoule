@@ -5,8 +5,8 @@ using UnityEngine;
 public class GeneticAlgo{
     public static int POPULATION_SIZE = 100;
     public static int PARENT_POPULATION_SIZE = 10;
-    public static int MUTATE_PROBABILITY = 15;
-
+    public static int MUTATE_PROBABILITY = 50;
+    public static int CROSSOVER_STRONG = 2;
 
     private static DNAMonster[] population;
     private static DNAMonster[] parentPopulation;
@@ -53,7 +53,7 @@ public class GeneticAlgo{
         int totalScore = 0;
         for (int i = 0; i < POPULATION_SIZE; ++i)
         {
-            totalScore += bests[0, i];
+            totalScore += bests[i, 1];
         }
         for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
         {
@@ -61,7 +61,7 @@ public class GeneticAlgo{
             int j = 0;
             while(temp >= 0)
             {
-                temp -= bests[0, j];
+                temp -= bests[j, 1];
                 j++;
             }
             parentPopulation[i] = new DNAMonster(population[bests[j-1,0]]);
@@ -79,10 +79,13 @@ public class GeneticAlgo{
         {
             int randMother = Random.Range(0, PARENT_POPULATION_SIZE);
             int randFather = Random.Range(0, PARENT_POPULATION_SIZE);
-            //on récupère un bodypart aléatoire contenu dans le pere et dans la mere et on change sa taille par celle du pere
-            int randNode = Random.Range(1, Mathf.Min(parentPopulation[randMother].getSize(), parentPopulation[randFather].getSize()));
-            population[i] = new DNAMonster(parentPopulation[randMother]);
-            population[i].getSubDna(randNode).getBodyPart().setSize(parentPopulation[randFather].getSubDna(randNode).getBodyPart().getSize());
+            for(int j =0; j<CROSSOVER_STRONG; j++)
+            {
+                //on récupère un bodypart aléatoire contenu dans le pere et dans la mere et on change sa taille par celle du pere
+                int randNode = Random.Range(1, Mathf.Min(parentPopulation[randMother].getSize(), parentPopulation[randFather].getSize()));
+                population[i] = new DNAMonster(parentPopulation[randMother]);
+                population[i].getSubDna(randNode).getBodyPart().setSize(parentPopulation[randFather].getSubDna(randNode).getBodyPart().getSize());
+            }
         }
     }
     /// <summary>
@@ -142,11 +145,11 @@ public class GeneticAlgo{
     /// <returns></returns>
     public static int[,] getBestMonsterIndexOrder()
     {
-        int[,] score = new int[POPULATION_SIZE,POPULATION_SIZE];
+        int[,] score = new int[POPULATION_SIZE,2];
         for (int i = 0; i < POPULATION_SIZE; i++)
         {
             score[i, 0] = getBestMonsterIndex();
-            score[0, i] = population[score[i, 0]].getScore();
+            score[i, 1] = population[score[i, 0]].getScore();
             population[score[i, 0]].setScore(0);
         }
         return score;
