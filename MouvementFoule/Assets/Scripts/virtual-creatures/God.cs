@@ -7,38 +7,73 @@ public class God : MonoBehaviour {
     public float tempTime;
     public GameObject GodPrefab;
     public List<GameObject> monstersGO;
+    public List<Monster> monstersComponent;
     // Use this for initialization
     void Start () {
         GeneticAlgo.idInstance = 0;
         GeneticAlgo.initAlgo();
-        for(int i = 0; i < GeneticAlgo.POPULATION_SIZE; i++)
-        {
-            spawnMonster(new Vector3(8 * (i - GeneticAlgo.POPULATION_SIZE / 2), 5, -30));
-        }
+
+        spawnPopulation(GeneticAlgo.POPULATION_SIZE);
         tempTime = Time.time;
     }
 	
 	// Update is called once per frame
 	void Update () {
-        if (Time.time - tempTime > Monster.LifeDuration+0.3)
+        if (Time.time - tempTime > Monster.LifeDuration + 0.3)
         {
-            foreach(GameObject g in monstersGO)
+            // Compute scores here...
+            ComputeScores();
+
+            foreach (GameObject g in monstersGO)
             {
                 Destroy(g);
             }
             monstersGO.Clear();
+            monstersComponent.Clear();
             GeneticAlgo.idInstance = 0;
             GeneticAlgo.createOneGeneration();
-            for (int i = 0; i < GeneticAlgo.POPULATION_SIZE; i++)
-            {
-                spawnMonster(new Vector3(8 * (i - GeneticAlgo.POPULATION_SIZE / 2), 5, -30));
-            }
+
+            spawnPopulation(GeneticAlgo.POPULATION_SIZE);
             tempTime = Time.time;
         }
     }
 
-    public void spawnMonster(Vector3 location)
+    void ComputeScores()
     {
-        monstersGO.Add(Instantiate(GodPrefab, location, new Quaternion(0, 0, 0, 0)));
+        for (int i = 0; i < monstersComponent.Count; i++)
+        {
+            Monster monster = monstersComponent[i];
+            Vector3 startPos = monster.getStartPos();
+            Vector3 endPos = monster.getPosition();
+
+            int score = (int)Mathf.Sqrt(Mathf.Pow(startPos.x - endPos.x, 2) + Mathf.Pow(startPos.z - endPos.z, 2));
+            GeneticAlgo.setScore(i, score);
+
+            monster.destroyMonster();
+        }
+    }
+
+    // Spawn the entire population of monster
+    void spawnPopulation(int populationSize)
+    {
+        GeneticAlgo.idInstance = 0;
+        int currentLayer = LayerMask.NameToLayer("physx1");
+        for (int i = 0; i < populationSize; i++)
+        {
+            DNAMonster dna = GeneticAlgo.getPopulation()[GeneticAlgo.idInstance];
+            spawnMonster(new Vector3(8 * (i - GeneticAlgo.POPULATION_SIZE / 2), 5, -30), currentLayer, dna);
+            currentLayer++;
+            GeneticAlgo.idInstance++;
+        }
+    }
+
+    public void spawnMonster(Vector3 location, int physxLayer, DNAMonster dna)
+    {
+        GameObject monster = Instantiate(GodPrefab, location, new Quaternion(0, 0, 0, 0));
+        Monster monsterComponent = monster.GetComponent<Monster>();
+
+        monsterComponent.initMonster(dna, physxLayer);
+        monstersGO.Add(monster);
+        monstersComponent.Add(monsterComponent);
     }
 }

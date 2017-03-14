@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Monster : MonoBehaviour {
+
     //time of life
     public static float LifeDuration = 10;
     //cube Prefab
@@ -13,22 +14,20 @@ public class Monster : MonoBehaviour {
     private GameObject[] go;
     //true if monster have been generated
     private bool isGenerate;
-    //id in population list in genetic algorithm
-    private int agId;
+    // Physic layer in which the monster is simulated
+    private int physxLayer;
     //others
     private int id;
-    private int score;
     private float count;
     private float startTime;
-    private Vector3 startPos, endPos;
+    private Vector3 startPos;
     
 
     // Use this for initialization
-    void Start () {
+
+    void Awake()
+    {
         isGenerate = false;
-        agId = GeneticAlgo.idInstance;
-        initMonster(GeneticAlgo.getPopulation()[agId]);
-        GeneticAlgo.idInstance++;
     }
 	
 	// Update is called once per frame
@@ -37,10 +36,11 @@ public class Monster : MonoBehaviour {
         {
             if (Time.time - startTime > LifeDuration)
             {
-                endPos = go[0].transform.position;
-                score = (int)Mathf.Sqrt(Mathf.Pow(startPos.x - endPos.x, 2) + Mathf.Pow(startPos.z - endPos.z, 2));
-                GeneticAlgo.setScore(agId, score);
-                destroyMonster();
+                for (int i = 0; i < go.Length; i++)
+                {
+                    go[i].SetActive(false);
+                }
+                gameObject.SetActive(false);
             }
             else
             {
@@ -57,8 +57,9 @@ public class Monster : MonoBehaviour {
     /// <summary>
     /// initialise the first cube of the monster and launch the creating process
     /// </summary>
-    public void initMonster(DNAMonster AGDna)
+    public void initMonster(DNAMonster AGDna, int physxLayer)
     {
+        this.physxLayer = physxLayer;
         //init var of monster
         id = 0;
         count = 0;
@@ -68,6 +69,7 @@ public class Monster : MonoBehaviour {
         go = new GameObject[dna.getSize()];
         //need to instanciate the first bodypart 
         go[id] = Instantiate(prefab, startPos, new Quaternion(0, 0, 0, 0));
+        go[id].layer = physxLayer;
         go[id].transform.localScale = dna.getBodyPart().getSize();
         if (dna.getChildren() != null)
         {
@@ -113,6 +115,7 @@ public class Monster : MonoBehaviour {
         Vector3 childWorldLocation = parent.transform.position + new Vector3(a.x* ((cs.x + ps.x) / 2), a.y* ((cs.y + ps.y) / 2), a.z* ((cs.z + ps.z) / 2));
         //instanciation du monstre
         go[id] = Instantiate(prefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
+        go[id].layer = physxLayer;
         go[id].transform.position = childWorldLocation;
         go[id].transform.localScale = cs;
     }
@@ -186,14 +189,6 @@ public class Monster : MonoBehaviour {
     }
 
     //accessors
-    public int getScore()
-    {
-        return score;
-    }
-    public void setScore(int newScore)
-    {
-        score = newScore;
-    }
     public DNAMonster getDna()
     {
         return dna;
@@ -201,5 +196,15 @@ public class Monster : MonoBehaviour {
     public void setDna(DNAMonster newDna)
     {
         dna = newDna;
+    }
+
+    public Vector3 getPosition()
+    {
+        return go[0].transform.position;
+    }
+
+    public Vector3 getStartPos()
+    {
+        return startPos;
     }
 }
