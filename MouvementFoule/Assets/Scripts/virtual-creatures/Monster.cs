@@ -18,7 +18,7 @@ public class Monster : MonoBehaviour {
     private int physxLayer;
     //others
     private int id;
-    private float count;
+    private int count;
     private float startTime;
     private Vector3 startPos;
     
@@ -45,10 +45,10 @@ public class Monster : MonoBehaviour {
             else
             {
                 run(count);
-                count += 0.1f;
-                if (count > 1.0f)
+                count += 1;
+                if (count >= 10)
                 {
-                    count = 0.0f;
+                    count = 0;
                 }
             }
         }
@@ -168,11 +168,22 @@ public class Monster : MonoBehaviour {
     /// <summary>
     /// try to move one monster
     /// </summary>
-    public void run(float count)
+    public void run(int count)
     {
         foreach(GameObject g in go)
         {
-            g.GetComponent<Rigidbody>().AddTorque(new Vector3(Random.Range(5, 20), Random.Range(-10, 20), Random.Range(-20, 20)));
+            switch (count % 2)
+            {
+                case 0:
+                    g.GetComponent<Rigidbody>().AddTorque(new Vector3(10, 0, 0));
+                    break;
+                case 1:
+                    g.GetComponent<Rigidbody>().AddForce(new Vector3(0, 0, 5));
+                    break;
+                default:
+                    break;
+            }
+            
         }
     }
 

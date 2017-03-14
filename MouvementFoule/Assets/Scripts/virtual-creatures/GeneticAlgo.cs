@@ -5,7 +5,7 @@ using UnityEngine;
 public class GeneticAlgo{
     public static int POPULATION_SIZE = 100;
     public static int PARENT_POPULATION_SIZE = 10;
-    public static int MUTATE_PROBABILITY = 5;
+    public static int MUTATE_PROBABILITY = 15;
 
 
     private static DNAMonster[] population;
@@ -96,10 +96,24 @@ public class GeneticAlgo{
             int rand = Random.Range(1, 101);
             if (rand <= MUTATE_PROBABILITY)
             {
-                //on ajoute un enfant à la position aléatoire tiré
-                int rand2 = Random.Range(1, population[i].getSize());
-                //population[i].addOneBodypart(rand2);
-                population[i].getSubDna(rand2).addOneBodypart();
+                int addOrDelete = Random.Range(0, 2);
+                if (population[i].getSize() <= 2)
+                {
+                    addOrDelete = 0;
+                }
+                if (addOrDelete == 0)
+                {
+                    //on ajoute un enfant à la position aléatoire tiré
+                    int rand2 = Random.Range(1, population[i].getSize());
+                    population[i].getSubDna(rand2).addOneBodypart();
+                }
+                else
+                {
+                    //on supprime un enfant à la position aléatoire tiré
+                    int rand2 = Random.Range(1, population[i].getSize());
+                    population[i].getSubDna(rand2).deleteOneBodypart();
+                }
+                
             }
         }
     }

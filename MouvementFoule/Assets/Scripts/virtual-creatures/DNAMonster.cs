@@ -141,6 +141,36 @@ public class DNAMonster{
         for (int i = 0; i < aLength+1; i++)
             anchor[i] = tempAnchor[i];
     }
+    public void deleteOneBodypart()
+    {
+        int cLength = 0;
+        int aLength = 0;
+        if (children != null)
+        {
+            cLength = children.Length - 1;
+            aLength = anchor.Length - 1;
+            if (cLength == 0)
+            {
+                children = null;
+                anchor = null;
+            }
+            else
+            {
+                DNAMonster[] tempChildren = new DNAMonster[cLength];
+                Vector3[] tempAnchor = new Vector3[aLength];
+                for (int i = 0; i < cLength; i++)
+                    tempChildren[i] = children[i];
+                for (int i = 0; i < aLength; i++)
+                    tempAnchor[i] = anchor[i];
+                children = new DNAMonster[cLength];
+                anchor = new Vector3[aLength];
+                for (int i = 0; i < cLength; i++)
+                    children[i] = tempChildren[i];
+                for (int i = 0; i < aLength; i++)
+                    anchor[i] = tempAnchor[i];
+            }
+        }
+    }
     public Vector3 getFreeAnchorSlot()
     {
         int rand = Random.Range(0, 6);
