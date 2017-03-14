@@ -8,6 +8,8 @@ public class Monster : MonoBehaviour {
     public static float LifeDuration = 10;
     //cube Prefab
     public GameObject prefab;
+    // True when one of the joints of the monster breaks
+    public bool isBroken;
     //dna of one monster (use by genetic algorith)
     private DNAMonster dna;
     //list of cube gameobject generate from dna
@@ -34,13 +36,9 @@ public class Monster : MonoBehaviour {
 	void FixedUpdate () {
         if (isGenerate)
         {
-            if (Time.time - startTime > LifeDuration)
+            if (Time.time - startTime > LifeDuration || isBroken)
             {
-                for (int i = 0; i < go.Length; i++)
-                {
-                    go[i].SetActive(false);
-                }
-                gameObject.SetActive(false);
+                disable();
             }
             else
             {
@@ -53,6 +51,16 @@ public class Monster : MonoBehaviour {
             }
         }
 	}
+
+    // Disable the current monster and all its body parts
+    void disable()
+    {
+        for (int i = 0; i < go.Length; i++)
+        {
+            go[i].SetActive(false);
+        }
+        gameObject.SetActive(false);
+    }
 
     /// <summary>
     /// initialise the first cube of the monster and launch the creating process
@@ -130,6 +138,7 @@ public class Monster : MonoBehaviour {
             SoftJointLimit softJointLimit = new SoftJointLimit();
             SoftJointLimitSpring softJointLimitSpring = new SoftJointLimitSpring();
             CharacterJoint joint = parent.AddComponent<CharacterJoint>();
+            addBreakDetectionTo(parent);
             //general setup
             joint.autoConfigureConnectedAnchor = true;
             joint.enableCollision = false;
@@ -166,6 +175,12 @@ public class Monster : MonoBehaviour {
             joint.breakForce = 6000;
             joint.breakForce = 6000;
         }
+    }
+
+    void addBreakDetectionTo(GameObject go)
+    {
+        BreakDetector breakDetector = go.AddComponent<BreakDetector>();
+        breakDetector.owner = this;
     }
 
     /// <summary>
