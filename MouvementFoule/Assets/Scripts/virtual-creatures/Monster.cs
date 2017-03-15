@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Monster : MonoBehaviour {
     //time of life
-    public static float LifeDuration = 10;
+    public static float LifeDuration = 15;
     //cube Prefab
     public GameObject prefab;
     // True when one of the joints of the monster breaks
@@ -142,33 +142,35 @@ public class Monster : MonoBehaviour {
             Vector3 ps = parent.transform.localScale;
             Vector3 anchor = new Vector3(a.x * (ps.x / 2), a.y * (ps.y / 2), a.z * (ps.z / 2));
             joint.anchor = anchor;
+            joint.axis = a.normalized;
+            //joint.swingAxis = new Vector3(Mathf.Abs(a.x), Mathf.Abs(a.y), Mathf.Abs(a.z));
             //configure lowTwistLimit
-            softJointLimit.limit = -1;
-            softJointLimit.bounciness = 0;
+            softJointLimit.limit = -180;
+            softJointLimit.bounciness = 1;
             softJointLimit.contactDistance = 0;
             joint.lowTwistLimit = softJointLimit;
             //configure highTwistLimit
-            softJointLimit.limit = 1;
-            softJointLimit.bounciness = 0;
+            softJointLimit.limit = 180;
+            softJointLimit.bounciness = 1;
             softJointLimit.contactDistance = 0;
             joint.highTwistLimit = softJointLimit;
             //configure SwingLimitSpring
-            softJointLimitSpring.spring = 40;
-            softJointLimitSpring.damper = 40;
+            softJointLimitSpring.spring = 0;
+            softJointLimitSpring.damper = 0;
             joint.swingLimitSpring = softJointLimitSpring;
             //configure Swing 1 limit
-            softJointLimit.limit = 20;
-            softJointLimit.bounciness = 1;
+            softJointLimit.limit = 0.2f;
+            softJointLimit.bounciness = 0;
             softJointLimit.contactDistance = 0;
             joint.swing1Limit = softJointLimit;
             //configure Swing 2 limit
-            softJointLimit.limit = 20;
-            softJointLimit.bounciness = 1;
+            softJointLimit.limit = 0.2f;
+            softJointLimit.bounciness = 0;
             softJointLimit.contactDistance = 0;
             joint.swing2Limit = softJointLimit;
             //configure resistance of the joint
-            joint.breakForce = 6000;
-            joint.breakForce = 6000;
+            joint.breakForce = 3000;
+            joint.breakForce = 3000;
         }
     }
 
@@ -191,7 +193,8 @@ public class Monster : MonoBehaviour {
             {
                 Vector3 torque = dna.getSubDna(i).getAction().getComputeTorque(t);
                 if (torque != Vector3.zero)
-                    g.GetComponent<Rigidbody>().AddTorque(torque);
+                    g.GetComponent<Rigidbody>().AddRelativeTorque(torque);
+                    //g.GetComponent<Rigidbody>().useConeFriction
                 i++;
             }
         }

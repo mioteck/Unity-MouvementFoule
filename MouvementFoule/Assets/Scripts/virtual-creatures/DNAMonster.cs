@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class DNAMonster{
     public static int [] NB_CHILDREN_CHANCE = { 20, 70, 10, 0, 0, 0 };//% de chance d'avoir 0, 1, 2, 3, 4, 5 enfants
-    public static int MAX_DEPTH = 2;
-    public static int MAX_CHILDREN = 2; //<=5 un cube n'a que 6 face!!!!! il faut garder un slot pour le parent
+    public static int MAX_DEPTH = 3;
+    public static int MAX_CHILDREN = 3; //<=5 un cube n'a que 6 face!!!!! il faut garder un slot pour le parent
     private BodyPart bodyPart;
     private DNAMonster[] children;
     private Vector3[] anchor;
