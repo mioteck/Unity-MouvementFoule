@@ -14,8 +14,9 @@ public class DNAMonster{
     private MoveAction action;
     private int score = 0;
 
-    public DNAMonster(BodyPart bp, DNAMonsterSer[] children, Vector3[] anchor, Vector3 parentAnchor)
+    public DNAMonster(MoveAction moveAction, BodyPart bp, DNAMonsterSer[] children, Vector3[] anchor, Vector3 parentAnchor)
     {
+        action = new MoveAction(moveAction);
         if (bp == null)
         {
             bodyPart = null;
@@ -46,7 +47,8 @@ public class DNAMonster{
             for (int i = 0; i < children.Length; i++)
             {
                 DNAMonsterSer d = children[i];
-                this.children[i] = new DNAMonster(d.bodyPart, d.children, d.anchors, d.parentAnchor);
+                MoveAction action = new MoveAction(d.action.action, d.action.power, d.action.axe);
+                this.children[i] = new DNAMonster(action, new BodyPart(d.bodyPartSize), d.children, d.anchors, d.parentAnchor);
             }
         }
         else

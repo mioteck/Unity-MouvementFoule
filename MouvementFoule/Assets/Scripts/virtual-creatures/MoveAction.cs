@@ -10,7 +10,7 @@ public class MoveAction{
     public static int MAX_ACTION = 6;
     public static int MAX_POWER = 10;
 
-    List<ActionType> action = new List<ActionType>();
+    public List<ActionType> action = new List<ActionType>();
     public List<int> power = new List<int>();
     public List<Vector3> axe = new List<Vector3>();
 
@@ -54,6 +54,19 @@ public class MoveAction{
         {
             axe.Add(a);
         }
+    }
+
+    /// <summary>
+    ///  natural constructor
+    /// </summary>
+    /// <param name="action"></param>
+    /// <param name="power"></param>
+    /// <param name="axe"></param>
+    public MoveAction(List<ActionType> action, List<int> power, List<Vector3> axe)
+    {
+        this.action = action;
+        this.power = power;
+        this.axe = axe;
     }
 
     /// <summary>

@@ -73,6 +73,7 @@ public class Monster : MonoBehaviour {
         //need to instanciate the first bodypart 
         go[id] = Instantiate(prefab, startPos, new Quaternion(0, 0, 0, 0));
         go[id].layer = physxLayer;
+
         go[id].transform.localScale = dna.getBodyPart().getSize();
         if (dna.getChildren() != null)
         {

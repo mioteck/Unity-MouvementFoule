@@ -7,6 +7,11 @@ public class BodyPart{
     public static float MAX_Z = 4.0f;
     private Vector3 size;
 
+    public BodyPart(Vector3 size)
+    {
+        this.size = size;
+    }
+
     public BodyPart(float x, float y, float z)
     {
         size = new Vector3(x, y, z);
