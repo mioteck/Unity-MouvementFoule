@@ -19,7 +19,7 @@ public class Monster : MonoBehaviour {
     private int physxLayer;
     //others
     private int id;
-    private int count;
+    private float timeCount;
     private float startTime;
     private Vector3 startPos;
 
@@ -39,12 +39,10 @@ public class Monster : MonoBehaviour {
             }
             else
             {
-                run(count);
-                count += 1;
-                if (count >= 10)
-                {
-                    count = 0;
-                }
+                timeCount += Time.deltaTime;
+                if (timeCount > 1.0f)
+                    timeCount = -1.0f;
+                run(timeCount);
             }
         }
 	}
@@ -67,7 +65,7 @@ public class Monster : MonoBehaviour {
         this.physxLayer = physxLayer;
         //init var of monster
         id = 0;
-        count = 0;
+        timeCount = 0;
         startTime = Time.time;
         startPos = gameObject.transform.position;
         dna = new DNAMonster(AGDna);
@@ -183,7 +181,7 @@ public class Monster : MonoBehaviour {
     /// <summary>
     /// try to move one monster
     /// </summary>
-    public void run(int count)
+    public void run(float t)
     {
         int i = 1;
         int size = dna.getSize();
@@ -191,7 +189,7 @@ public class Monster : MonoBehaviour {
         {
             if (i < size)
             {
-                Vector3 torque = dna.getSubDna(i).getAction().getComputeTorque(count / 10);
+                Vector3 torque = dna.getSubDna(i).getAction().getComputeTorque(t);
                 if (torque != Vector3.zero)
                     g.GetComponent<Rigidbody>().AddTorque(torque);
                 i++;

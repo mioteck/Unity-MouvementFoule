@@ -230,6 +230,10 @@ public class DNAMonster{
     {
         return bodyPart;
     }
+    public void setBodypart(BodyPart newBodypart)
+    {
+        bodyPart = newBodypart;
+    }
     public DNAMonster[] getChildren()
     {
         return children;

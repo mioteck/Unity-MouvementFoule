@@ -4,11 +4,15 @@ using UnityEngine;
 
 public class GeneticAlgo{
     public static int POPULATION_SIZE = 100;
-    public static int PARENT_POPULATION_SIZE = 10;
-    public static int MUTATE_PROBABILITY = 50;
+    public static int PARENT_POPULATION_SIZE = 20;
+
+    public static int CROSSOVER_PROBABILITY = 100;
     public static int CROSSOVER_STRONG = 2;
+    public static int CROSSOVER_NB_OPTION = 2;
+
+    public static int MUTATE_PROBABILITY = 30;
     public static int MUTATE_STRONG = 2;
-    public static int MUTATE_NB_OPTION = 4;
+    public static int MUTATE_NB_OPTION = 5;
 
     private static DNAMonster[] population;
     private static DNAMonster[] parentPopulation;
@@ -81,12 +85,25 @@ public class GeneticAlgo{
         {
             int randMother = Random.Range(0, PARENT_POPULATION_SIZE);
             int randFather = Random.Range(0, PARENT_POPULATION_SIZE);
-            for(int j =0; j<CROSSOVER_STRONG; j++)
+            population[i] = new DNAMonster(parentPopulation[randMother]);
+            for(int j = 0; j < CROSSOVER_STRONG; j++)
             {
-                //on récupère un bodypart aléatoire contenu dans le pere et dans la mere et on change sa taille par celle du pere
-                int randNode = Random.Range(1, Mathf.Min(parentPopulation[randMother].getSize(), parentPopulation[randFather].getSize()));
-                population[i] = new DNAMonster(parentPopulation[randMother]);
-                population[i].getSubDna(randNode).getBodyPart().setSize(parentPopulation[randFather].getSubDna(randNode).getBodyPart().getSize());
+                int shouldCrossover = Random.Range(1, 101);
+                if (shouldCrossover <= CROSSOVER_PROBABILITY)
+                {
+                    int option = Random.Range(0, CROSSOVER_NB_OPTION);
+                    switch (option)
+                    {
+                        case 0:
+                            crossoverSwapAction(i, randFather);
+                            break;
+                        case 1:
+                            crossoverSwapBodypart(i, randFather);
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
         }
     }
@@ -100,8 +117,8 @@ public class GeneticAlgo{
         {
             for (int j = 0; j < MUTATE_STRONG; j++)
             {
-                int rand = Random.Range(1, 101);
-                if (rand <= MUTATE_PROBABILITY)
+                int shouldMutate = Random.Range(1, 101);
+                if (shouldMutate <= MUTATE_PROBABILITY)
                 {
                     int option = Random.Range(0, MUTATE_NB_OPTION);
                     switch (option)
@@ -111,15 +128,16 @@ public class GeneticAlgo{
                             break;
                         case 1:
                             if (population[i].getSize() <= 2)
-                            {
                                 mutateDeleteBodypart(i);
-                            }
                             break;
                         case 2:
                             mutateChangeAction(i);
                             break;
                         case 3:
                             mutateSwapAction(i);
+                            break;
+                        case 4:
+                            mutateRescaleBodypart(i);
                             break;
                         default:
                             break;
@@ -190,22 +208,37 @@ public class GeneticAlgo{
         population[posInPopulation].setScore(score);
     }
 
-
+    /// <summary>
+    /// mutate -> add one bodypart to the DNA
+    /// </summary>
+    /// <param name="id"></param>
     public static void mutateAddBodypart(int id)
     {
         int rand = Random.Range(1, population[id].getSize());
         population[id].getSubDna(rand).addOneBodypart();
     }
+    /// <summary>
+    /// mutate -> delete one bodypart of the DNA
+    /// </summary>
+    /// <param name="id"></param>
     public static void mutateDeleteBodypart(int id)
     {
         int rand = Random.Range(1, population[id].getSize());
         population[id].getSubDna(rand).deleteOneBodypart();
     }
+    /// <summary>
+    /// mutate -> create new random action on one part of the DNA
+    /// </summary>
+    /// <param name="id"></param>
     public static void mutateChangeAction(int id)
     {
         int rand = Random.Range(1, population[id].getSize());
         population[id].getSubDna(rand).setAction(new MoveAction());
     }
+    /// <summary>
+    /// mutate -> swap action of two part of the DNA
+    /// </summary>
+    /// <param name="id"></param>
     public static void mutateSwapAction(int id)
     {
         int rand1 = Random.Range(1, population[id].getSize());
@@ -214,5 +247,33 @@ public class GeneticAlgo{
         population[id].getSubDna(rand1).setAction(population[id].getSubDna(rand2).getAction());
         population[id].getSubDna(rand2).setAction(a);
     }
-
+    /// <summary>
+    /// mutate -> rescale one bodypart
+    /// </summary>
+    /// <param name="id"></param>
+    public static void mutateRescaleBodypart(int id)
+    {
+        int rand = Random.Range(1, population[id].getSize());
+        population[id].getSubDna(rand).setBodypart(new BodyPart());
+    }
+    /// <summary>
+    /// swap one action from father to child (who already have mother dna)
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="idFather"></param>
+    public static void crossoverSwapAction(int id, int idFather)
+    {
+        int randNode = Random.Range(1, Mathf.Min(population[id].getSize(), parentPopulation[idFather].getSize()));
+        population[id].getSubDna(randNode).setAction(parentPopulation[idFather].getSubDna(randNode).getAction());
+    }
+    /// <summary>
+    /// swap one bodypart from father to child (who already have mother dna)
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="idFather"></param>
+    public static void crossoverSwapBodypart(int id, int idFather)
+    {
+        int randNode = Random.Range(1, Mathf.Min(population[id].getSize(), parentPopulation[idFather].getSize()));
+        population[id].getSubDna(randNode).setBodypart(parentPopulation[idFather].getSubDna(randNode).getBodyPart());
+    }
 }
