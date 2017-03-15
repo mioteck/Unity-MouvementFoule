@@ -279,6 +279,12 @@ public class DNAMonster{
     {
         return children;
     }
+    public void setSubDna(DNAMonster[] newChildren, Vector3[] newAnchor, MoveAction newAction)
+    {
+        children = newChildren;
+        anchor = newAnchor;
+        action = newAction;
+    }
 
     public Vector3[] getAnchor()
     {
@@ -288,7 +294,7 @@ public class DNAMonster{
     {
         return parentAnchor;
     }
-    private void setParentAnchor(Vector3 newParentAnchor)
+    public void setParentAnchor(Vector3 newParentAnchor)
     {
         parentAnchor = newParentAnchor;
     } 

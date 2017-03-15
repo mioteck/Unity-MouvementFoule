@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Monster : MonoBehaviour {
     //time of life
-    public static float LifeDuration = 15;
+    public static float LifeDuration = 8;
     //cube Prefab
     public GameObject prefab;
     // True when one of the joints of the monster breaks
@@ -142,7 +142,7 @@ public class Monster : MonoBehaviour {
             Vector3 ps = parent.transform.localScale;
             Vector3 anchor = new Vector3(a.x * (ps.x / 2), a.y * (ps.y / 2), a.z * (ps.z / 2));
             joint.anchor = anchor;
-            joint.axis = a.normalized;
+            joint.axis = new Vector3(a.x+0.2f, a.y+0.2f, a.z+0.2f).normalized;
             //joint.swingAxis = new Vector3(Mathf.Abs(a.x), Mathf.Abs(a.y), Mathf.Abs(a.z));
             //configure lowTwistLimit
             softJointLimit.limit = -180;
@@ -194,7 +194,6 @@ public class Monster : MonoBehaviour {
                 Vector3 torque = dna.getSubDna(i).getAction().getComputeTorque(t);
                 if (torque != Vector3.zero)
                     g.GetComponent<Rigidbody>().AddRelativeTorque(torque);
-                    //g.GetComponent<Rigidbody>().useConeFriction
                 i++;
             }
         }

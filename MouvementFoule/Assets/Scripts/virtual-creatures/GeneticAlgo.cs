@@ -8,7 +8,7 @@ public class GeneticAlgo{
 
     public static int CROSSOVER_PROBABILITY = 80;
     public static int CROSSOVER_STRONG = 2;
-    public static int CROSSOVER_NB_OPTION = 2;
+    public static int CROSSOVER_NB_OPTION = 3;
 
     public static int MUTATE_PROBABILITY = 20;
     public static int MUTATE_STRONG = 2;
@@ -58,15 +58,15 @@ public class GeneticAlgo{
     public static void selection()
     {
         int[,] bests = getBestMonsterIndexOrder();
-
-        Debug.Log("(GeneticAlgo.selection) : Best Score for Génération " + generationCount + " = " + bests[0, 1]);
-        generationCount++;
-
         int totalScore = 0;
         for (int i = 0; i < POPULATION_SIZE; ++i)
         {
             totalScore += bests[i, 1];
         }
+
+        Debug.Log("(GeneticAlgo.selection) : Average/Best Score for Génération " + generationCount + " = " + totalScore/POPULATION_SIZE + " / " + bests[0,1]);
+        generationCount++;
+
         for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
         {
             int temp = Random.Range(0, totalScore);
@@ -105,6 +105,9 @@ public class GeneticAlgo{
                             break;
                         case 1:
                             crossoverSwapBodypart(i, randFather);
+                            break;
+                        case 2:
+                            crossoverCrossDNA(i, randFather);
                             break;
                         default:
                             break;
@@ -281,5 +284,18 @@ public class GeneticAlgo{
     {
         int randNode = Random.Range(1, Mathf.Min(population[id].getSize(), parentPopulation[idFather].getSize()));
         population[id].getSubDna(randNode).setBodypart(parentPopulation[idFather].getSubDna(randNode).getBodyPart());
+    }
+    /// <summary>
+    /// set one part of the father DNA to the children 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="idFather"></param>
+    public static void crossoverCrossDNA(int id, int idFather)
+    {
+        if (population[id].getSize() > 3 && parentPopulation[idFather].getSize() > 3)
+        {
+            population[id].getChildren()[0] = new DNAMonster(parentPopulation[idFather]);
+            population[id].getChildren()[0].setParentAnchor(population[id].getAnchor()[0]);
+        }
     }
 }
