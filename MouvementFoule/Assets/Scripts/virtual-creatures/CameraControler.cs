@@ -12,7 +12,7 @@ public class CameraControler : MonoBehaviour
     private float down;
     [Header("FPS Camera")]
     public float moveSpeed = 0.005f;
-    public float altitude = 0;
+    public float altitude = 40;
     public float speedH = 3.0f;
     public float speedV = 3.0f;
     private float yaw = 0.0f;
@@ -30,8 +30,6 @@ public class CameraControler : MonoBehaviour
         down = Screen.height * 0.1f;
         positionCamera = transform.position;
         rotationCamera = transform.localEulerAngles;
-
-        altitude = gameObject.transform.position.y;
     }
 
     void Update()
