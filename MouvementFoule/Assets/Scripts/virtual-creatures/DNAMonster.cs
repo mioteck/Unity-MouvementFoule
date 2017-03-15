@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
+[System.Serializable]
 public class DNAMonster{
     public static int [] NB_CHILDREN_CHANCE = { 20, 70, 10, 0, 0, 0 };//% de chance d'avoir 0, 1, 2, 3, 4, 5 enfants
     public static int MAX_DEPTH = 3;
@@ -13,6 +13,47 @@ public class DNAMonster{
     private Vector3 parentAnchor;
     private MoveAction action;
     private int score = 0;
+
+    public DNAMonster(BodyPart bp, DNAMonsterSer[] children, Vector3[] anchor, Vector3 parentAnchor)
+    {
+        if (bp == null)
+        {
+            bodyPart = null;
+        }
+        else
+        {
+            Vector3 size = bp.getSize();
+            bodyPart = new BodyPart(size.x, size.y, size.z);
+        }
+        this.parentAnchor = parentAnchor;
+
+        if (anchor != null)
+        {
+            this.anchor = new Vector3[anchor.Length];
+            for (int i = 0; i < anchor.Length; i++)
+            {
+                this.anchor[i] = anchor[i];
+            }
+        }
+        else
+        {
+            this.anchor = null;
+        }
+
+        if (children != null)
+        {
+            this.children = new DNAMonster[children.Length];
+            for (int i = 0; i < children.Length; i++)
+            {
+                DNAMonsterSer d = children[i];
+                this.children[i] = new DNAMonster(d.bodyPart, d.children, d.anchors, d.parentAnchor);
+            }
+        }
+        else
+        {
+            this.children = null;
+        }
+    } 
 
     public DNAMonster(Vector3 parentAnchor, int depth = 0)
     {
