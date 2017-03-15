@@ -6,13 +6,15 @@ public class GeneticAlgo{
     public static int POPULATION_SIZE = 100;
     public static int PARENT_POPULATION_SIZE = 20;
 
-    public static int CROSSOVER_PROBABILITY = 100;
+    public static int CROSSOVER_PROBABILITY = 80;
     public static int CROSSOVER_STRONG = 2;
     public static int CROSSOVER_NB_OPTION = 2;
 
-    public static int MUTATE_PROBABILITY = 30;
+    public static int MUTATE_PROBABILITY = 20;
     public static int MUTATE_STRONG = 2;
     public static int MUTATE_NB_OPTION = 5;
+
+    public static int generationCount = 0;
 
     private static DNAMonster[] population;
     private static DNAMonster[] parentPopulation;
@@ -56,6 +58,10 @@ public class GeneticAlgo{
     public static void selection()
     {
         int[,] bests = getBestMonsterIndexOrder();
+
+        Debug.Log("(GeneticAlgo.selection) : Best Score for Génération " + generationCount + " = " + bests[0, 1]);
+        generationCount++;
+
         int totalScore = 0;
         for (int i = 0; i < POPULATION_SIZE; ++i)
         {
