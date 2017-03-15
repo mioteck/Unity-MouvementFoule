@@ -7,6 +7,8 @@ public class GeneticAlgo{
     public static int PARENT_POPULATION_SIZE = 10;
     public static int MUTATE_PROBABILITY = 50;
     public static int CROSSOVER_STRONG = 2;
+    public static int MUTATE_STRONG = 2;
+    public static int MUTATE_NB_OPTION = 4;
 
     private static DNAMonster[] population;
     private static DNAMonster[] parentPopulation;
@@ -96,27 +98,33 @@ public class GeneticAlgo{
     {
         for (int i = 0; i < POPULATION_SIZE; i++)
         {
-            int rand = Random.Range(1, 101);
-            if (rand <= MUTATE_PROBABILITY)
+            for (int j = 0; j < MUTATE_STRONG; j++)
             {
-                int addOrDelete = Random.Range(0, 2);
-                if (population[i].getSize() <= 2)
+                int rand = Random.Range(1, 101);
+                if (rand <= MUTATE_PROBABILITY)
                 {
-                    addOrDelete = 0;
+                    int option = Random.Range(0, MUTATE_NB_OPTION);
+                    switch (option)
+                    {
+                        case 0:
+                            mutateAddBodypart(i);
+                            break;
+                        case 1:
+                            if (population[i].getSize() <= 2)
+                            {
+                                mutateDeleteBodypart(i);
+                            }
+                            break;
+                        case 2:
+                            mutateChangeAction(i);
+                            break;
+                        case 3:
+                            mutateSwapAction(i);
+                            break;
+                        default:
+                            break;
+                    }
                 }
-                if (addOrDelete == 0)
-                {
-                    //on ajoute un enfant à la position aléatoire tiré
-                    int rand2 = Random.Range(1, population[i].getSize());
-                    population[i].getSubDna(rand2).addOneBodypart();
-                }
-                else
-                {
-                    //on supprime un enfant à la position aléatoire tiré
-                    int rand2 = Random.Range(1, population[i].getSize());
-                    population[i].getSubDna(rand2).deleteOneBodypart();
-                }
-                
             }
         }
     }
@@ -181,4 +189,30 @@ public class GeneticAlgo{
     {
         population[posInPopulation].setScore(score);
     }
+
+
+    public static void mutateAddBodypart(int id)
+    {
+        int rand = Random.Range(1, population[id].getSize());
+        population[id].getSubDna(rand).addOneBodypart();
+    }
+    public static void mutateDeleteBodypart(int id)
+    {
+        int rand = Random.Range(1, population[id].getSize());
+        population[id].getSubDna(rand).deleteOneBodypart();
+    }
+    public static void mutateChangeAction(int id)
+    {
+        int rand = Random.Range(1, population[id].getSize());
+        population[id].getSubDna(rand).setAction(new MoveAction());
+    }
+    public static void mutateSwapAction(int id)
+    {
+        int rand1 = Random.Range(1, population[id].getSize());
+        int rand2 = Random.Range(1, population[id].getSize());
+        MoveAction a = population[id].getSubDna(rand1).getAction();
+        population[id].getSubDna(rand1).setAction(population[id].getSubDna(rand2).getAction());
+        population[id].getSubDna(rand2).setAction(a);
+    }
+
 }
