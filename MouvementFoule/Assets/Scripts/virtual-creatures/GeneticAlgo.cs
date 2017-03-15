@@ -4,14 +4,19 @@ using UnityEngine;
 
 public class GeneticAlgo{
     public static int POPULATION_SIZE = 100;
-    public static int PARENT_POPULATION_SIZE = 20;
+    public static int PARENT_POPULATION_SIZE = 10;
 
-    public static int CROSSOVER_PROBABILITY = 80;
-    public static int CROSSOVER_STRONG = 2;
+    public static int SELECTION_NB_RANDOM_CHILREN = 0;
+    public static int SELECTION_NB_KEEP_PARENT = 2;
+
+    public static int CROSSOVER_START = SELECTION_NB_RANDOM_CHILREN + SELECTION_NB_KEEP_PARENT;
+    public static int CROSSOVER_PROBABILITY = 100;
+    public static int CROSSOVER_STRONG = 1;
     public static int CROSSOVER_NB_OPTION = 3;
 
-    public static int MUTATE_PROBABILITY = 20;
-    public static int MUTATE_STRONG = 2;
+    public static int MUTATE_START = SELECTION_NB_RANDOM_CHILREN + SELECTION_NB_KEEP_PARENT;
+    public static int MUTATE_PROBABILITY = 30;
+    public static int MUTATE_STRONG = 1;
     public static int MUTATE_NB_OPTION = 5;
 
     public static int generationCount = 0;
@@ -20,63 +25,90 @@ public class GeneticAlgo{
     private static DNAMonster[] parentPopulation;
     public static int idInstance;
 
-
+    /// <summary>
+    /// initialise the population randomly for the first generation of monsters
+    /// </summary>
     public static void initAlgo()
     {
         population = new DNAMonster[POPULATION_SIZE];
         parentPopulation = new DNAMonster[PARENT_POPULATION_SIZE];
-        initialize();
+        for (int i = 0; i < POPULATION_SIZE; ++i)
+        {
+            population[i] = new DNAMonster(Vector3.zero, 0);
+        }
+        for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
+        {
+            parentPopulation[i] = new DNAMonster(Vector3.zero, 0);
+        }
     }
-
     /// <summary>
     /// create the next generation
     /// </summary>
     public static void createOneGeneration()
     {
-        selection();
+        statisticSelection();
+        createNonCrossoverPopulation();
         crossover();
         mutate();
     }
     /// <summary>
-    /// initialise the population randomly for the first generation of monsters
+    /// create parent population regarding to the bests scores and a probabilist system
     /// </summary>
-    public static void initialize()
+    public static void statisticSelection()
     {
-        for (int i = 0; i < POPULATION_SIZE; ++i)
-        {
-            population[i] = new DNAMonster(Vector3.zero, 0);
-        }
-        for(int i = 0; i < PARENT_POPULATION_SIZE; ++i)
-        {
-            parentPopulation[i] = new DNAMonster(Vector3.zero, 0);
-        }
-    }
-
-    /// <summary>
-    /// create parent population regarding to the bests scores
-    /// </summary>
-    public static void selection()
-    {
+        //calcul du tableau des score et du score total
         int[,] bests = getBestMonsterIndexOrder();
         int totalScore = 0;
-        for (int i = 0; i < POPULATION_SIZE; ++i)
+        for (int i = 0; i < POPULATION_SIZE; i++)
         {
             totalScore += bests[i, 1];
         }
-
-        Debug.Log("(GeneticAlgo.selection) : Average/Best Score for Génération " + generationCount + " = " + totalScore/POPULATION_SIZE + " / " + bests[0,1]);
+        //affichage du meilleur score et de l'average score
+        Debug.Log("(GeneticAlgo.statisticSelection) : Average/Best Score for Génération " + generationCount + " = " + totalScore/POPULATION_SIZE + " / " + bests[0,1]);
         generationCount++;
-
-        for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
+        //permet de garder de facon fixe le meilleur pourcentage de la population
+        for(int i = 0; i<SELECTION_NB_KEEP_PARENT; i++)
         {
-            int temp = Random.Range(0, totalScore);
-            int j = 0;
-            while(temp >= 0)
+            parentPopulation[i] = new DNAMonster(population[bests[i, 0]]);
+            totalScore -= bests[i, 1];
+            bests[i, 1] = 0;
+        }
+        //permet de selectionner de facon probabiliste le reste des parents
+        for (int i = SELECTION_NB_KEEP_PARENT; i < PARENT_POPULATION_SIZE; ++i)
+        {
+            int rand = Random.Range(1, totalScore);
+            bool test = false;
+            for(int j = SELECTION_NB_KEEP_PARENT; j < POPULATION_SIZE; j++)
             {
-                temp -= bests[j, 1];
-                j++;
+                rand -= bests[j, 1];
+                if (rand <= 1 && bests[j, 1] != 0)
+                {
+                    parentPopulation[i] = new DNAMonster(population[bests[j, 0]]);
+                    totalScore -= bests[j, 1];
+                    bests[j, 1] = 0;
+                    test = true;
+                    j = POPULATION_SIZE;
+                }
             }
-            parentPopulation[i] = new DNAMonster(population[bests[j-1,0]]);
+            if (!test)
+            {
+                Debug.Log("WARNING in GeneticAlgo.statisticSelection");
+                i--;
+            }
+        }
+    }
+    /// <summary>
+    /// create the first part of the population without crossover (new children and exact copy of parents)
+    /// </summary>
+    public static void createNonCrossoverPopulation()
+    {
+        for (int i = 0; i < SELECTION_NB_KEEP_PARENT; i++)
+        {
+            population[i] = parentPopulation[i];
+        }
+        for(int i = 0; i < SELECTION_NB_RANDOM_CHILREN; i++)
+        {
+            population[i] = new DNAMonster(Vector3.zero, 0);
         }
     }
     /// <summary>
@@ -87,7 +119,7 @@ public class GeneticAlgo{
     /// <param name="father"></param>
     public static void crossover()
     {
-        for (int i = 0; i < POPULATION_SIZE; i++)
+        for (int i = CROSSOVER_START; i < POPULATION_SIZE; i++)
         {
             int randMother = Random.Range(0, PARENT_POPULATION_SIZE);
             int randFather = Random.Range(0, PARENT_POPULATION_SIZE);
@@ -122,7 +154,7 @@ public class GeneticAlgo{
     /// <param name="child"></param>
     public static void mutate()
     {
-        for (int i = 0; i < POPULATION_SIZE; i++)
+        for (int i = MUTATE_START; i < POPULATION_SIZE; i++)
         {
             for (int j = 0; j < MUTATE_STRONG; j++)
             {
@@ -136,7 +168,7 @@ public class GeneticAlgo{
                             mutateAddBodypart(i);
                             break;
                         case 1:
-                            if (population[i].getSize() <= 2)
+                            if (population[i].getSize() >= 6)
                                 mutateDeleteBodypart(i);
                             break;
                         case 2:
@@ -292,10 +324,11 @@ public class GeneticAlgo{
     /// <param name="idFather"></param>
     public static void crossoverCrossDNA(int id, int idFather)
     {
-        if (population[id].getSize() > 3 && parentPopulation[idFather].getSize() > 3)
+        if (population[id].getSize() >= 2 && parentPopulation[idFather].getSize() >= 2)
         {
-            population[id].getChildren()[0] = new DNAMonster(parentPopulation[idFather]);
-            population[id].getChildren()[0].setParentAnchor(population[id].getAnchor()[0]);
+            int rand = Random.Range(0, population[id].getChildren().Length);
+            population[id].getChildren()[rand] = new DNAMonster(parentPopulation[idFather].getChildren()[0]);
+            population[id].getChildren()[rand].setParentAnchor(population[id].getAnchor()[0]);
         }
     }
 }

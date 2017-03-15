@@ -7,8 +7,8 @@ public enum ActionType { NULL, NEGATE, SIN, COS, ABS, POW2, SQRT}
 public class MoveAction{
     public static int[] CHANCE_ACTION = { 20, 10, 25, 25, 6, 7, 7 };
     public static int TOTAL_NB_ACTION = 7;
-    public static int MAX_ACTION = 6;
-    public static int MAX_POWER = 10;
+    public static int MAX_ACTION = 1;
+    public static int MAX_POWER = 5;
 
     List<ActionType> action = new List<ActionType>();
     public List<int> power = new List<int>();
@@ -55,7 +55,6 @@ public class MoveAction{
             axe.Add(a);
         }
     }
-
     /// <summary>
     /// return the torque to apply on time t
     /// </summary>
@@ -71,7 +70,6 @@ public class MoveAction{
         }
         return result;
     }
-
     /// <summary>
     /// return the f
     /// </summary>

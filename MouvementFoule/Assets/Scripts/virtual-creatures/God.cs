@@ -8,6 +8,7 @@ public class God : MonoBehaviour {
     public GameObject GodPrefab;
     public List<GameObject> monstersGO;
     public List<Monster> monstersComponent;
+
     // Use this for initialization
     void Start () {
         GeneticAlgo.idInstance = 0;
@@ -17,7 +18,7 @@ public class God : MonoBehaviour {
     }
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
         if (Time.time - tempTime > Monster.LifeDuration + 0.3)
         {
             // Compute scores here...
@@ -46,13 +47,15 @@ public class God : MonoBehaviour {
             if (monster.isBroken)
             {
                 score = 0;
+                GeneticAlgo.getPopulation()[i].setScore(score);
             }
             else
             {
                 Vector3 startPos = monster.getStartPos();
                 Vector3 endPos = monster.getPosition();
 
-                score = (int)Mathf.Sqrt(Mathf.Pow(startPos.x - endPos.x, 2) + Mathf.Pow(startPos.z - endPos.z, 2));
+                score = (int)(endPos.z - startPos.z)+ ((int)(endPos.z - startPos.z) * monster.getDna().getSize() / 20);
+                //score = (int)Mathf.Sqrt(Mathf.Pow(startPos.x - endPos.x, 2) + Mathf.Pow(startPos.z - endPos.z, 2));
                 GeneticAlgo.getPopulation()[i].setScore(score);
             }
             monster.destroyMonster();
