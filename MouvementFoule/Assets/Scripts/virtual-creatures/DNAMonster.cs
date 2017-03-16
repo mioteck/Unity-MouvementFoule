@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Phenotype { LINE, SPIDER, UNIQUE}
+
 [System.Serializable]
 public class DNAMonster{
     public static Vector3[] LOOK_UP_TABLE_XZ = { Vector3.right, Vector3.forward, Vector3.left, Vector3.back };
-    public static int [] NB_CHILDREN_CHANCE = { 10, 90, 0, 0, 0, 0 };//% de chance d'avoir 0, 1, 2, 3, 4, 5 enfants
-    public static int MAX_DEPTH = 4;
-    public static int MAX_CHILDREN = 1; //<=5 un cube n'a que 6 face!!!!! il faut garder un slot pour le parent
     private BodyPart bodyPart;
     private DNAMonster[] children;
     private Vector3[] anchor;
@@ -19,16 +18,10 @@ public class DNAMonster{
     {
         action = new MoveAction(moveAction);
         if (bp == null)
-        {
             bodyPart = null;
-        }
         else
-        {
-            Vector3 size = bp.getSize();
-            bodyPart = new BodyPart(size.x, size.y, size.z);
-        }
+            bodyPart = new BodyPart(bp);
         this.parentAnchor = parentAnchor;
-
         if (anchor != null)
         {
             this.anchor = new Vector3[anchor.Length];
@@ -41,7 +34,6 @@ public class DNAMonster{
         {
             this.anchor = null;
         }
-
         if (children != null)
         {
             this.children = new DNAMonster[children.Length];
@@ -57,40 +49,6 @@ public class DNAMonster{
             this.children = null;
         }
     } 
-    public DNAMonster(Vector3 parentAnchor, int depth = 0)
-    {
-        bodyPart = new BodyPart();
-        this.parentAnchor = parentAnchor;
-        action = new MoveAction();
-        ++depth;
-        if(depth <= MAX_DEPTH)
-        {
-            int rand = Random.Range(1, 101);
-            int nbChildren = 0;
-            if (depth > 1 && rand <= NB_CHILDREN_CHANCE[0])
-                nbChildren = 0;
-            else if (rand <= NB_CHILDREN_CHANCE[1] + NB_CHILDREN_CHANCE[0])
-                nbChildren = 1;
-            else if (rand <= NB_CHILDREN_CHANCE[2] + NB_CHILDREN_CHANCE[1] + NB_CHILDREN_CHANCE[0])
-                nbChildren = 2;
-            else if (rand <= NB_CHILDREN_CHANCE[3] + NB_CHILDREN_CHANCE[2] + NB_CHILDREN_CHANCE[1] + NB_CHILDREN_CHANCE[0])
-                nbChildren = 3;
-            else if (rand <= NB_CHILDREN_CHANCE[4] + NB_CHILDREN_CHANCE[3] + NB_CHILDREN_CHANCE[2] + NB_CHILDREN_CHANCE[1] + NB_CHILDREN_CHANCE[0])
-                nbChildren = 4;
-            else if (rand <= NB_CHILDREN_CHANCE[5] + NB_CHILDREN_CHANCE[4] + NB_CHILDREN_CHANCE[3] + NB_CHILDREN_CHANCE[2] + NB_CHILDREN_CHANCE[1] + NB_CHILDREN_CHANCE[0])
-                nbChildren = 5;
-            else
-                Debug.Log("ERROR in DNAMonster constructor");
-            children = new DNAMonster[nbChildren];
-            anchor = new Vector3[nbChildren];
-            createAnchor(nbChildren);
-            for (int i = 0; i < nbChildren; ++i)
-            {
-                children[i] = new DNAMonster(anchor[i], depth);
-            }
-        }
-
-    }
     public DNAMonster(DNAMonster dna)
     {
         bodyPart = dna.bodyPart;
@@ -107,13 +65,12 @@ public class DNAMonster{
             }
         }
     }
-
-    public DNAMonster(string phenotype, Vector3 newParentAnchor, int length = 0)
+    public DNAMonster(Phenotype phenotype, Vector3 newParentAnchor, int length = 0)
     {
         switch (phenotype)
         {
-            case "line":
-                bodyPart = new BodyPart("leg");
+            case Phenotype.LINE:
+                bodyPart = new BodyPart(BodyType.LEG);
                 action = new MoveAction();
                 parentAnchor = newParentAnchor;
                 length--;
@@ -122,15 +79,20 @@ public class DNAMonster{
                     children = new DNAMonster[1];
                     anchor = new Vector3[1];
                     anchor[0] = Vector3.right;
-                    children[0] = new DNAMonster("line", anchor[0], length);
+                    children[0] = new DNAMonster(Phenotype.LINE, anchor[0], length);
                 }
                 break;
-            case "spider":
-                bodyPart = new BodyPart("cube");
+            case Phenotype.UNIQUE:
+                bodyPart = new BodyPart(BodyType.DEFAULT);
                 action = new MoveAction();
                 parentAnchor = newParentAnchor;
+                break;
+            case Phenotype.SPIDER:
+                bodyPart = new BodyPart(BodyType.CUBE);
+                action = new MoveAction(ActionType.NULL);
+                parentAnchor = newParentAnchor;
                 //create leg
-                DNAMonster leg = new DNAMonster("line", Vector3.right, 2);
+                DNAMonster leg = new DNAMonster(Phenotype.LINE, Vector3.right, 2);
                 //create 4 'legs' by rotating leg
                 children = new DNAMonster[4];
                 anchor = new Vector3[4];
@@ -140,35 +102,13 @@ public class DNAMonster{
                     anchor[i] = LOOK_UP_TABLE_XZ[i];
                 }
                 break;
+            default:
+                Debug.Log("ERROR in DNAMonster.constructor.phenotype");
+                break;
         }
     }
 
-
-    public void createAnchor(int size)
-    {
-        bool test = false;
-        for (int i = 0; i < size; i++)
-        {
-            test = true;
-            int val = Random.Range(0, 6);
-            anchor[i] = associateIntToAnchor(val);
-            if(invertAnchor(parentAnchor) == anchor[i])
-            {
-                test = false;
-            }
-            for (int j = 0; j < i; j++)
-            {
-                if (anchor[j] == anchor[i])
-                {
-                    test = false;
-                }
-            }
-            if (!test)
-            {
-                i--;
-            }
-        }
-    }
+    //anchor functions
     public Vector3 associateIntToAnchor(int val)
     {
         switch (val)
@@ -207,10 +147,6 @@ public class DNAMonster{
         Debug.Log("ERROR in DNAMonster::associateAnchorToInt");
         return 0;
     }
-    public Vector3 invertAnchor(Vector3 a)
-    {
-        return new Vector3(-a.x, -a.y, -a.z);
-    }
     public void addOneBodypart()
     {
         int cLength = 0;
@@ -222,17 +158,17 @@ public class DNAMonster{
         }
         DNAMonster[] tempChildren = new DNAMonster[cLength + 1];
         Vector3[] tempAnchor = new Vector3[aLength + 1];
-        for(int i = 0; i < cLength; i++)
+        for (int i = 0; i < cLength; i++)
             tempChildren[i] = children[i];
-        for(int i = 0; i < aLength; i++)
+        for (int i = 0; i < aLength; i++)
             tempAnchor[i] = anchor[i];
         tempAnchor[aLength] = getFreeAnchorSlot();
-        tempChildren[cLength] = new DNAMonster(tempAnchor[aLength], MAX_DEPTH);
+        tempChildren[cLength] = new DNAMonster(Phenotype.UNIQUE, getFreeAnchorSlot());
         children = new DNAMonster[cLength + 1];
         anchor = new Vector3[aLength + 1];
-        for (int i = 0; i < cLength+1; i++)
+        for (int i = 0; i < cLength + 1; i++)
             children[i] = tempChildren[i];
-        for (int i = 0; i < aLength+1; i++)
+        for (int i = 0; i < aLength + 1; i++)
             anchor[i] = tempAnchor[i];
     }
     public void deleteOneBodypart()
@@ -296,6 +232,7 @@ public class DNAMonster{
         return associateIntToAnchor(rand);
     }
 
+    //accessors
     public int getSize()
     {
         int res = 1;
@@ -320,13 +257,6 @@ public class DNAMonster{
     {
         return children;
     }
-    public void setSubDna(DNAMonster[] newChildren, Vector3[] newAnchor, MoveAction newAction)
-    {
-        children = newChildren;
-        anchor = newAnchor;
-        action = newAction;
-    }
-
     public Vector3[] getAnchor()
     {
         return anchor;
@@ -339,7 +269,6 @@ public class DNAMonster{
     {
         parentAnchor = newParentAnchor;
     } 
-
     public int getScore()
     {
         return score;
@@ -406,6 +335,8 @@ public class DNAMonster{
             axis = new Vector3(x, y, z);
             if ((newParentAnchor.x > 0 || newParentAnchor.y > 0 || newParentAnchor.z > 0) && (parentAnchor.x < 0 || parentAnchor.y < 0 || parentAnchor.z < 0))
                 axis = new Vector3(-x, -y, -z);
+            else if ((newParentAnchor.x < 0 || newParentAnchor.y < 0 || newParentAnchor.z < 0) && (parentAnchor.x > 0 || parentAnchor.y > 0 || parentAnchor.z > 0))
+                axis = new Vector3(-x, -y, -z);
         }
         res.changeAnchorFromAxis(axis);
         return res;
@@ -418,12 +349,6 @@ public class DNAMonster{
     /// <returns></returns>
     private Vector3 getNextAnchorFromAxis(Vector3 oldAnchor,Vector3 axis)
     {
-        /*
-        Vector3[][] lookUpTable = new Vector3[3][];
-        lookUpTable[0] = new Vector3[4] { Vector3.up, Vector3.forward, Vector3.down, Vector3.back };
-        lookUpTable[1] = new Vector3[4] { Vector3.right, Vector3.forward, Vector3.left, Vector3.back };
-        lookUpTable[2] = new Vector3[4] { Vector3.right, Vector3.up, Vector3.left, Vector3.down };
-        */
         if(axis == Vector3.zero)
         {
             Debug.Log("ERROR in DNAMonster.getNextAnchorFromAxis");
@@ -470,36 +395,4 @@ public class DNAMonster{
 
     }
 
-
-
-
-
-
-
-    /*
-    /// <summary>
-    /// use the same algorithme of getSubDna but set the node to the new value get in parameter
-    /// </summary>
-    /// <param name="subDna"></param>
-    /// <param name="pos"></param>
-    public bool addOneBodypart(int pos)
-    {
-        for (int i = 0; i < children.Length; i++)
-        {
-            if (pos == 1)
-            {
-                children[i].addOneBodypart();
-                return true;
-            }
-            pos -= children[i].getSize();
-            if (pos <= 0)
-            {
-                pos += children[i].getSize() - 1;
-                return children[i].addOneBodypart(pos);
-            }
-        }
-        Debug.Log("ERROR in DNAMonster.setSubDna()");
-        return false;
-    }
-    */
 }

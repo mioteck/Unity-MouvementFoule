@@ -8,7 +8,7 @@ public class SerializeTest : MonoBehaviour {
 
 	void Start () {
 
-        DNAMonster dna = new DNAMonster(Vector3.zero, 0);
+        DNAMonster dna = new DNAMonster(Phenotype.SPIDER, Vector3.zero);
 
         GameObject monster = Instantiate(prefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
         Monster monsterComponent = monster.GetComponent<Monster>();

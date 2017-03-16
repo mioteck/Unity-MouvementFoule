@@ -42,11 +42,11 @@ public class GeneticAlgo{
         parentPopulation = new DNAMonster[PARENT_POPULATION_SIZE];
         for (int i = 0; i < POPULATION_SIZE; ++i)
         {
-            population[i] = new DNAMonster("spider", Vector3.zero);
+            population[i] = new DNAMonster(Phenotype.SPIDER, Vector3.zero);
         }
         for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
         {
-            parentPopulation[i] = new DNAMonster("spider", Vector3.zero);
+            parentPopulation[i] = new DNAMonster(Phenotype.SPIDER, Vector3.zero);
         }
         initializeChunk();
         initializeParentPopulation();
@@ -70,7 +70,7 @@ public class GeneticAlgo{
     {
         for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
         {
-            parentPopulation[i] = new DNAMonster(Vector3.zero, 0);
+            parentPopulation[i] = new DNAMonster(Phenotype.SPIDER, Vector3.zero);
         }
     }
 
@@ -81,7 +81,7 @@ public class GeneticAlgo{
     {
         for (int i = 0; i < POPULATION_CHUNK_SIZE; ++i)
         {
-            population[currentChunk * POPULATION_CHUNK_SIZE + i] = new DNAMonster(Vector3.zero, 0);
+            population[currentChunk * POPULATION_CHUNK_SIZE + i] = new DNAMonster(Phenotype.SPIDER, Vector3.zero);
         }
     }
 
@@ -235,7 +235,7 @@ public class GeneticAlgo{
         }
         for(int i = 0; i < SELECTION_NB_RANDOM_CHILREN; i++)
         {
-            population[i] = new DNAMonster(Vector3.zero, 0);
+            population[i] = new DNAMonster(Phenotype.SPIDER, Vector3.zero);
         }
     }
     /// <summary>
@@ -260,15 +260,13 @@ public class GeneticAlgo{
                     switch (option)
                     {
                         case 0:
-                            crossoverCrossDNA(i, randMother, randFather);
-                            //crossoverSwapAction(i, randFather);
+                            crossoverCrossSymmetry(i, randMother, randFather);
                             break;
                         case 1:
-                            crossoverCrossDNA(i, randMother, randFather);
-                            //crossoverSwapBodypart(i, randFather);
+                            crossoverCrossAssymetry(i, randMother, randFather);
                             break;
                         case 2:
-                            crossoverCrossDNA(i, randMother, randFather);
+                            crossoverCrossRandom(i, randMother, randFather);
                             break;
                         default:
                             break;
@@ -297,14 +295,13 @@ public class GeneticAlgo{
                             mutateAddBodypart(i);
                             break;
                         case 1:
-                            if (population[i].getSize() >= 6)
-                                mutateDeleteBodypart(i);
+                            mutateDeleteBodypart(i);
                             break;
                         case 2:
                             mutateChangeAction(i);
                             break;
                         case 3:
-                            mutateSwapAction(i);
+                            mutateTurnNode(i);
                             break;
                         case 4:
                             mutateRescaleBodypart(i);
@@ -406,52 +403,66 @@ public class GeneticAlgo{
         population[id].getSubDna(rand).setAction(new MoveAction());
     }
     /// <summary>
-    /// mutate -> swap action of two part of the DNA
-    /// </summary>
-    /// <param name="id"></param>
-    public static void mutateSwapAction(int id)
-    {
-        int rand1 = Random.Range(1, population[id].getSize());
-        int rand2 = Random.Range(1, population[id].getSize());
-        MoveAction a = population[id].getSubDna(rand1).getAction();
-        population[id].getSubDna(rand1).setAction(population[id].getSubDna(rand2).getAction());
-        population[id].getSubDna(rand2).setAction(a);
-    }
-    /// <summary>
     /// mutate -> rescale one bodypart
     /// </summary>
     /// <param name="id"></param>
     public static void mutateRescaleBodypart(int id)
     {
         int rand = Random.Range(1, population[id].getSize());
-        population[id].getSubDna(rand).setBodypart(new BodyPart());
+        population[id].getSubDna(rand).setBodypart(new BodyPart(population[id].getSubDna(rand).getBodyPart().getType()));
     }
     /// <summary>
-    /// swap one action from father to child (who already have mother dna)
+    /// mutate turn one node in dna
     /// </summary>
     /// <param name="id"></param>
-    /// <param name="idFather"></param>
-    public static void crossoverSwapAction(int id, int idFather)
+    public static void mutateTurnNode(int id)
     {
-        int randNode = Random.Range(1, Mathf.Min(population[id].getSize(), parentPopulation[idFather].getSize()));
-        population[id].getSubDna(randNode).setAction(parentPopulation[idFather].getSubDna(randNode).getAction());
+        int rand = Random.Range(1, population[id].getSize());
+        //population[id] = new DNAMonster(population[id].getSubDna(rand).getRotateSubDna(population[id].getSubDna(rand).getFreeAnchorSlot()));
     }
     /// <summary>
-    /// swap one bodypart from father to child (who already have mother dna)
+    /// set spider from 1 leg of father and 1 leg of mother position symmetrically
     /// </summary>
     /// <param name="id"></param>
     /// <param name="idFather"></param>
-    public static void crossoverSwapBodypart(int id, int idFather)
+    public static void crossoverCrossSymmetry(int idChild, int idMother, int idFather)
     {
-        int randNode = Random.Range(1, Mathf.Min(population[id].getSize(), parentPopulation[idFather].getSize()));
-        population[id].getSubDna(randNode).setBodypart(parentPopulation[idFather].getSubDna(randNode).getBodyPart());
+        if (parentPopulation[idMother].getChildren() != null && parentPopulation[idFather].getChildren() != null)
+        {
+            int posFather1 = Random.Range(0, parentPopulation[idFather].getChildren().Length);
+            int posMother1 = Random.Range(0, parentPopulation[idMother].getChildren().Length);
+            population[idChild] = new DNAMonster(Phenotype.SPIDER, Vector3.zero);
+            population[idChild].getChildren()[0] = parentPopulation[idMother].getChildren()[posMother1].getRotateSubDna(Vector3.right);
+            population[idChild].getChildren()[1] = parentPopulation[idMother].getChildren()[posMother1].getRotateSubDna(Vector3.left);
+            population[idChild].getChildren()[2] = parentPopulation[idFather].getChildren()[posFather1].getRotateSubDna(Vector3.forward);
+            population[idChild].getChildren()[3] = parentPopulation[idFather].getChildren()[posFather1].getRotateSubDna(Vector3.back);
+        }
     }
     /// <summary>
-    /// set one part of the father DNA to the children 
+    /// set spider from 1 leg of father and 1 leg of mother position Asymmetrically
     /// </summary>
     /// <param name="id"></param>
     /// <param name="idFather"></param>
-    public static void crossoverCrossDNA(int idChild, int idMother, int idFather)
+    public static void crossoverCrossAssymetry(int idChild, int idMother, int idFather)
+    {
+        if (parentPopulation[idMother].getChildren() != null && parentPopulation[idFather].getChildren() != null)
+        {
+            int posFather1 = Random.Range(0, parentPopulation[idFather].getChildren().Length);
+            int posMother1 = Random.Range(0, parentPopulation[idMother].getChildren().Length);
+            population[idChild] = new DNAMonster(Phenotype.SPIDER, Vector3.zero);
+            population[idChild].getChildren()[0] = parentPopulation[idMother].getChildren()[posMother1].getRotateSubDna(Vector3.right);
+            population[idChild].getChildren()[1] = parentPopulation[idMother].getChildren()[posMother1].getRotateSubDna(Vector3.forward);
+            population[idChild].getChildren()[2] = parentPopulation[idFather].getChildren()[posFather1].getRotateSubDna(Vector3.left);
+            population[idChild].getChildren()[3] = parentPopulation[idFather].getChildren()[posFather1].getRotateSubDna(Vector3.back);
+        }
+    }
+    /// <summary>
+    /// set spider from 2 random leg of father and 2 random leg of mother
+    /// </summary>
+    /// <param name="idChild"></param>
+    /// <param name="idMother"></param>
+    /// <param name="idFather"></param>
+    public static void crossoverCrossRandom(int idChild, int idMother, int idFather)
     {
         if (parentPopulation[idMother].getChildren() != null && parentPopulation[idFather].getChildren() != null)
         {
@@ -459,51 +470,12 @@ public class GeneticAlgo{
             int posFather2 = Random.Range(0, parentPopulation[idFather].getChildren().Length);
             int posMother1 = Random.Range(0, parentPopulation[idMother].getChildren().Length);
             int posMother2 = Random.Range(0, parentPopulation[idMother].getChildren().Length);
-            population[idChild] = new DNAMonster("spider", Vector3.zero);
+            population[idChild] = new DNAMonster(Phenotype.SPIDER, Vector3.zero);
             population[idChild].getChildren()[0] = parentPopulation[idMother].getChildren()[posMother1].getRotateSubDna(Vector3.right);
-            population[idChild].getChildren()[1] = parentPopulation[idMother].getChildren()[posMother1].getRotateSubDna(Vector3.left);
+            population[idChild].getChildren()[1] = parentPopulation[idMother].getChildren()[posMother2].getRotateSubDna(Vector3.left);
             population[idChild].getChildren()[2] = parentPopulation[idFather].getChildren()[posFather1].getRotateSubDna(Vector3.forward);
-            population[idChild].getChildren()[3] = parentPopulation[idFather].getChildren()[posFather1].getRotateSubDna(Vector3.back);
+            population[idChild].getChildren()[3] = parentPopulation[idFather].getChildren()[posFather2].getRotateSubDna(Vector3.back);
         }
-
-
-        /*
-        if (parentPopulation[idMother].getSize() >= 2 && parentPopulation[idFather].getSize() >= 2)
-        {
-            //chose random subDna in root node of mother and father
-            int randMother = Random.Range(0, parentPopulation[idMother].getChildren().Length);
-            int randFather = Random.Range(0, parentPopulation[idFather].getChildren().Length);
-            //add missing bodypart
-            while(population[idChild].getAnchor().Length < 4)
-            {
-                population[idChild].addOneBodypart();
-            }
-            //create anchor tab
-            population[idChild].getAnchor()[0] = Vector3.right;
-            population[idChild].getAnchor()[1] = Vector3.left;
-            population[idChild].getAnchor()[2] = Vector3.forward;
-            population[idChild].getAnchor()[3] = Vector3.back;
-            //create children tab
-            population[idChild].getChildren()[0] = parentPopulation[idMother].getChildren()[randMother].getRotateSubDna(Vector3.right);
-            population[idChild].getChildren()[1] = parentPopulation[idMother].getChildren()[randMother].getRotateSubDna(Vector3.left);
-            population[idChild].getChildren()[2] = parentPopulation[idFather].getChildren()[randFather].getRotateSubDna(Vector3.forward);
-            population[idChild].getChildren()[3] = parentPopulation[idFather].getChildren()[randFather].getRotateSubDna(Vector3.back);
-            //reset parentAnchor
-            population[idChild].setParentAnchor(Vector3.zero);
-            //rescale
-            population[idChild].getBodyPart().setSize(1.5f * Vector3.one);
-            for(int i = 1; i< population[idChild].getSize(); i++)
-            {
-                Vector3 temp = population[idChild].getSubDna(i).getBodyPart().getSize();
-                if (temp.x > 1)
-                    temp.x = 1;
-                if (temp.y > 1)
-                    temp.y = 1;
-                if (temp.y > 1)
-                    temp.y = 1;
-                population[idChild].getSubDna(i).getBodyPart().setSize(temp);
-            }
-        }*/
     }
 
 

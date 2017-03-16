@@ -36,6 +36,13 @@ public class MoveAction{
             }
         }
     }
+    public MoveAction(ActionType a)
+    {
+        int nbAction = Random.Range(0, MAX_ACTION-1);
+        action.Add(a);
+        power.Add(Random.Range(0, MAX_POWER));
+        axe.Add(getRandomAxe());
+    }
     /// <summary>
     /// copy constructor
     /// </summary>
