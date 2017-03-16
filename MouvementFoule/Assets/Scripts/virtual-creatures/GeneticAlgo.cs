@@ -442,9 +442,17 @@ public class GeneticAlgo{
     /// <param name="id"></param>
     public static void mutateAddBodypart(int id)
     {
-        int rand = Random.Range(1, population[id].getSize());
-        population[id].getSubDna(rand).addOneBodypart();
+        DNAMonster dna = population[id];
+
+        while (dna.getChildren() != null)
+        {
+            int rand = Random.Range(0, dna.getChildren().Length);
+            dna = dna.getChildren()[rand];
+        }
+
+        dna.addOneBodypart();
     }
+
     /// <summary>
     /// mutate -> delete one bodypart of the DNA
     /// </summary>
