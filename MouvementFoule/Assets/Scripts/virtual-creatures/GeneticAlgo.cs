@@ -156,27 +156,84 @@ public class GeneticAlgo{
     /// </summary>
     public static void selection()
     {
-        int[,] bests = getBestMonsterIndexOrder();
+        int maxScore = 0;
+        int maxId = 0;
         int totalScore = 0;
-        for (int i = 0; i < POPULATION_SIZE; ++i)
-        {
-            totalScore += bests[i, 1];
-        }
+        List<int> cumulScoreList = new List<int>(POPULATION_SIZE);
 
-        Debug.Log("(GeneticAlgo.selection) : Average/Best Score for Génération " + generationCount + " = " + totalScore / POPULATION_SIZE + " / " + bests[0, 1]);
-        generationCount++;
-
-        for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
+        // Compute max score, total score, build a list of cumulated scores
+        for (int i = 0; i < POPULATION_SIZE; i++)
         {
-            int temp = Random.Range(0, totalScore);
-            int j = 0;
-            while (temp >= 0)
+            int currentScore = population[i].getScore();
+
+            totalScore += currentScore;
+            cumulScoreList.Add(totalScore);
+
+            if (currentScore > maxScore)
             {
-                temp -= bests[j, 1];
-                j++;
+                maxScore = currentScore;
+                maxId = i;
             }
-            parentPopulation[i] = new DNAMonster(population[bests[j - 1, 0]]);
         }
+
+        Debug.Log("Generation : " + currentGeneration + "; max score : " + maxScore + "; average : " + (totalScore / (float)POPULATION_SIZE));
+
+        // Always keep the best
+        parentPopulation[0] = new DNAMonster(population[maxId]);
+        cumulScoreList[maxId] = -1;
+
+        for (int i = 1; i < PARENT_POPULATION_SIZE; i++)
+        {
+            int randScore = Random.Range(0, totalScore);
+            int pickedId = -1;
+
+            for (int j = 0; j < POPULATION_SIZE; j++)
+            {
+                if (cumulScoreList[j] == -1)
+                {
+                    pickedId = findFirstPositive(cumulScoreList, j);
+                    cumulScoreList[pickedId] = -1;
+                    break;
+                }
+                else if (cumulScoreList[j] <= randScore)
+                {
+                    cumulScoreList[j] = -1;
+                    pickedId = j;
+                    break;
+                }
+            }
+
+            if (pickedId == -1)
+            {
+                pickedId = findFirstPositive(cumulScoreList, 0);
+                cumulScoreList[pickedId] = -1;
+            }
+
+            parentPopulation[i] = new DNAMonster(population[pickedId]);
+        }
+    }
+
+    private static int findFirstPositive(List<int> list, int startIndex)
+    {
+        for (int i = startIndex; i < list.Count; i++)
+        {
+            if (list[i] >= 0)
+            {
+                return i;
+            }
+        }
+
+        for (int i = 0; i < startIndex; i++)
+        {
+            if (list[i] >= 0)
+            {
+                return i;
+            }
+        }
+
+
+        Debug.Log("Cannot find more parent to pick. PARENT_POPULATION_SIZE is too big !");
+        return -1;
     }
     /// <summary>
     /// create parent population regarding to the bests scores and a probabilist system
