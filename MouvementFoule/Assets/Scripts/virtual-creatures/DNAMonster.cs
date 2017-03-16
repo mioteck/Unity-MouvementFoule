@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Phenotype { LINE, SPIDER, UNIQUE, SNAKE, RANDOM}
+
 [System.Serializable]
 public class DNAMonster{
-    public static int [] NB_CHILDREN_CHANCE = { 20, 70, 10, 0, 0, 0 };//% de chance d'avoir 0, 1, 2, 3, 4, 5 enfants
-    public static int MAX_DEPTH = 3;
-    public static int MAX_CHILDREN = 3; //<=5 un cube n'a que 6 face!!!!! il faut garder un slot pour le parent
     private BodyPart bodyPart;
     private DNAMonster[] children;
     private Vector3[] anchor;
@@ -18,16 +17,10 @@ public class DNAMonster{
     {
         action = new MoveAction(moveAction);
         if (bp == null)
-        {
             bodyPart = null;
-        }
         else
-        {
-            Vector3 size = bp.getSize();
-            bodyPart = new BodyPart(size.x, size.y, size.z);
-        }
+            bodyPart = new BodyPart(bp);
         this.parentAnchor = parentAnchor;
-
         if (anchor != null)
         {
             this.anchor = new Vector3[anchor.Length];
@@ -40,7 +33,6 @@ public class DNAMonster{
         {
             this.anchor = null;
         }
-
         if (children != null)
         {
             this.children = new DNAMonster[children.Length];
@@ -56,46 +48,11 @@ public class DNAMonster{
             this.children = null;
         }
     } 
-
-    public DNAMonster(Vector3 parentAnchor, int depth = 0)
-    {
-        bodyPart = new BodyPart();
-        this.parentAnchor = parentAnchor;
-        action = new MoveAction();
-        ++depth;
-        if(depth <= MAX_DEPTH)
-        {
-            int rand = Random.Range(1, 101);
-            int nbChildren = 0;
-            if (depth > 1 && rand <= NB_CHILDREN_CHANCE[0])
-                nbChildren = 0;
-            else if (rand <= NB_CHILDREN_CHANCE[1] + NB_CHILDREN_CHANCE[0])
-                nbChildren = 1;
-            else if (rand <= NB_CHILDREN_CHANCE[2] + NB_CHILDREN_CHANCE[1] + NB_CHILDREN_CHANCE[0])
-                nbChildren = 2;
-            else if (rand <= NB_CHILDREN_CHANCE[3] + NB_CHILDREN_CHANCE[2] + NB_CHILDREN_CHANCE[1] + NB_CHILDREN_CHANCE[0])
-                nbChildren = 3;
-            else if (rand <= NB_CHILDREN_CHANCE[4] + NB_CHILDREN_CHANCE[3] + NB_CHILDREN_CHANCE[2] + NB_CHILDREN_CHANCE[1] + NB_CHILDREN_CHANCE[0])
-                nbChildren = 4;
-            else if (rand <= NB_CHILDREN_CHANCE[5] + NB_CHILDREN_CHANCE[4] + NB_CHILDREN_CHANCE[3] + NB_CHILDREN_CHANCE[2] + NB_CHILDREN_CHANCE[1] + NB_CHILDREN_CHANCE[0])
-                nbChildren = 5;
-            else
-                Debug.Log("ERROR in DNAMonster constructor");
-            children = new DNAMonster[nbChildren];
-            anchor = new Vector3[nbChildren];
-            createAnchor(nbChildren);
-            for (int i = 0; i < nbChildren; ++i)
-            {
-                children[i] = new DNAMonster(anchor[i], depth);
-            }
-        }
-
-    }
     public DNAMonster(DNAMonster dna)
     {
         bodyPart = dna.bodyPart;
         parentAnchor = dna.parentAnchor;
-        action = dna.action;
+        action = new MoveAction(dna.action);
         if (dna.children != null)
         {
             children = new DNAMonster[dna.children.Length];
@@ -107,32 +64,99 @@ public class DNAMonster{
             }
         }
     }
-
-    public void createAnchor(int size)
+    public DNAMonster(Phenotype phenotype, Vector3 newParentAnchor, int length = 2)
     {
-        bool test = false;
-        for (int i = 0; i < size; i++)
+        switch (phenotype)
         {
-            test = true;
-            int val = Random.Range(0, 6);
-            anchor[i] = associateIntToAnchor(val);
-            if(invertAnchor(parentAnchor) == anchor[i])
-            {
-                test = false;
-            }
-            for (int j = 0; j < i; j++)
-            {
-                if (anchor[j] == anchor[i])
+            case Phenotype.LINE:
+                bodyPart = new BodyPart(BodyType.LEG, newParentAnchor);
+                action = new MoveAction();
+                parentAnchor = newParentAnchor;
+                length--;
+                if (length > 0)
                 {
-                    test = false;
+                    children = new DNAMonster[1];
+                    anchor = new Vector3[1];
+                    anchor[0] = newParentAnchor;
+                    children[0] = new DNAMonster(Phenotype.LINE, anchor[0], length);
                 }
-            }
-            if (!test)
-            {
-                i--;
-            }
+                break;
+            case Phenotype.UNIQUE:
+                bodyPart = new BodyPart(BodyType.DEFAULT, newParentAnchor);
+                action = new MoveAction();
+                parentAnchor = newParentAnchor;
+                break;
+            case Phenotype.SPIDER:
+                bodyPart = new BodyPart(BodyType.CUBE, newParentAnchor);
+                action = new MoveAction(ActionType.NULL);
+                parentAnchor = newParentAnchor;
+                //create leg
+                DNAMonster legX = new DNAMonster(Phenotype.LINE, Vector3.right, 2);
+                DNAMonster legZ = new DNAMonster(Phenotype.LINE, Vector3.forward, 2);
+                //create 4 'legs' by rotating leg
+                children = new DNAMonster[4];
+                anchor = new Vector3[4];
+                children[0] = new DNAMonster(legX.getRotateSubDna(Vector3.right));
+                anchor[0] = Vector3.right;
+                children[1] = new DNAMonster(legX.getRotateSubDna(Vector3.left));
+                anchor[1] = Vector3.left;
+                children[2] = new DNAMonster(legZ.getRotateSubDna(Vector3.forward));
+                anchor[2] = Vector3.forward;
+                children[3] = new DNAMonster(legZ.getRotateSubDna(Vector3.back));
+                anchor[3] = Vector3.back;
+                break;
+            case Phenotype.SNAKE:
+                bodyPart = new BodyPart(BodyType.CUBE, newParentAnchor);
+                action = new MoveAction(ActionType.NULL);
+                parentAnchor = newParentAnchor;
+                //create leg
+                DNAMonster leg = new DNAMonster(Phenotype.LINE, Vector3.forward, 4);
+                //create 4 'legs' by rotating leg
+                children = new DNAMonster[1];
+                anchor = new Vector3[1];
+                children[0] = new DNAMonster(leg.getRotateSubDna(Vector3.back));
+                anchor[0] = Vector3.back;
+                break;
+            case Phenotype.RANDOM:
+                if(newParentAnchor == Vector3.zero)
+                {
+                    bodyPart = new BodyPart(BodyType.CUBE, newParentAnchor);
+                    action = new MoveAction(ActionType.NULL);
+                    parentAnchor = newParentAnchor;
+                }
+                else
+                {
+                    bodyPart = new BodyPart(BodyType.DEFAULT, newParentAnchor);
+                    action = new MoveAction();
+                    parentAnchor = newParentAnchor;
+                }
+                int nbChildren = Random.Range(1,4);
+                anchor = new Vector3[nbChildren];
+                children = new DNAMonster[nbChildren];
+                for(int i = 0; i < nbChildren; i++)
+                {
+                    int isLineOrRandom = Random.Range(0, 5);
+                    int l = Random.Range(2, 6);
+                    Vector3 a = getFreeAnchorSlot();
+                    if(isLineOrRandom != 0)
+                    {
+                        anchor[i] = new Vector3((int)Mathf.Abs(a.x), (int)Mathf.Abs(a.y), (int)Mathf.Abs(a.z));
+                        children[i] = new DNAMonster(Phenotype.LINE, anchor[i], l).getRotateSubDna(a);
+                    }
+                    else
+                    {
+                        anchor[i] = new Vector3((int)Mathf.Abs(a.x), (int)Mathf.Abs(a.y), (int)Mathf.Abs(a.z));
+                        children[i] = new DNAMonster(Phenotype.RANDOM, anchor[i], l).getRotateSubDna(a);
+                    }
+                }
+                break;
+            default:
+                Debug.Log("ERROR in DNAMonster.constructor.phenotype");
+                break;
         }
     }
+
+    //anchor functions
     public Vector3 associateIntToAnchor(int val)
     {
         switch (val)
@@ -171,10 +195,6 @@ public class DNAMonster{
         Debug.Log("ERROR in DNAMonster::associateAnchorToInt");
         return 0;
     }
-    public Vector3 invertAnchor(Vector3 a)
-    {
-        return new Vector3(-a.x, -a.y, -a.z);
-    }
     public void addOneBodypart()
     {
         int cLength = 0;
@@ -186,17 +206,17 @@ public class DNAMonster{
         }
         DNAMonster[] tempChildren = new DNAMonster[cLength + 1];
         Vector3[] tempAnchor = new Vector3[aLength + 1];
-        for(int i = 0; i < cLength; i++)
+        for (int i = 0; i < cLength; i++)
             tempChildren[i] = children[i];
-        for(int i = 0; i < aLength; i++)
+        for (int i = 0; i < aLength; i++)
             tempAnchor[i] = anchor[i];
         tempAnchor[aLength] = getFreeAnchorSlot();
-        tempChildren[cLength] = new DNAMonster(tempAnchor[aLength], MAX_DEPTH);
+        tempChildren[cLength] = new DNAMonster(Phenotype.UNIQUE, getFreeAnchorSlot());
         children = new DNAMonster[cLength + 1];
         anchor = new Vector3[aLength + 1];
-        for (int i = 0; i < cLength+1; i++)
+        for (int i = 0; i < cLength + 1; i++)
             children[i] = tempChildren[i];
-        for (int i = 0; i < aLength+1; i++)
+        for (int i = 0; i < aLength + 1; i++)
             anchor[i] = tempAnchor[i];
     }
     public void deleteOneBodypart()
@@ -229,12 +249,33 @@ public class DNAMonster{
             }
         }
     }
+
+    public void deleteChild(DNAMonster child)
+    {
+        Vector3[] newAnchors = new Vector3[getAnchor().Length - 1];
+        DNAMonster[] children = new DNAMonster[getChildren().Length - 1];
+
+        int count = 0;
+        for (int i = 0; i < getChildren().Length; i++)
+        {
+            if (getChildren()[i] != child)
+            {
+                children[count] = getChildren()[i];
+                newAnchors[count] = getAnchor()[i];
+                count++;
+            }
+        }
+    }
+
     public Vector3 getFreeAnchorSlot()
     {
         int rand = Random.Range(0, 6);
-        while(rand == associateAnchorToInt(parentAnchor))
+        if(parentAnchor != Vector3.zero)
         {
-            rand = Random.Range(0, 6);
+            while (rand == associateAnchorToInt(parentAnchor))
+            {
+                rand = Random.Range(0, 6);
+            }
         }
         if(children == null)
         {
@@ -257,6 +298,7 @@ public class DNAMonster{
         return associateIntToAnchor(rand);
     }
 
+    //accessors
     public int getSize()
     {
         int res = 1;
@@ -281,13 +323,6 @@ public class DNAMonster{
     {
         return children;
     }
-    public void setSubDna(DNAMonster[] newChildren, Vector3[] newAnchor, MoveAction newAction)
-    {
-        children = newChildren;
-        anchor = newAnchor;
-        action = newAction;
-    }
-
     public Vector3[] getAnchor()
     {
         return anchor;
@@ -300,7 +335,6 @@ public class DNAMonster{
     {
         parentAnchor = newParentAnchor;
     } 
-
     public int getScore()
     {
         return score;
@@ -340,31 +374,114 @@ public class DNAMonster{
         Debug.Log("ERROR in DNAMonster.getSubDna()");
         return null;
     }
-
-    /*
     /// <summary>
-    /// use the same algorithme of getSubDna but set the node to the new value get in parameter
+    /// set a subDna : WARNING : use it with carrefully the new subDna must be accordable
     /// </summary>
-    /// <param name="subDna"></param>
     /// <param name="pos"></param>
-    public bool addOneBodypart(int pos)
+    /// <param name="newSubDna"></param>
+    public void setSubDna(int pos, DNAMonster newSubDna)
     {
         for (int i = 0; i < children.Length; i++)
         {
             if (pos == 1)
             {
-                children[i].addOneBodypart();
-                return true;
+                children[i] = new DNAMonster(newSubDna);
+                anchor[i] = newSubDna.getParentAnchor();
+                break;
             }
             pos -= children[i].getSize();
             if (pos <= 0)
             {
                 pos += children[i].getSize() - 1;
-                return children[i].addOneBodypart(pos);
+                children[i].setSubDna(pos, newSubDna);
             }
         }
-        Debug.Log("ERROR in DNAMonster.setSubDna()");
-        return false;
     }
-    */
+    /// <summary>
+    /// return the dna monster rotate in a way that his parentAnchor will now be the anchor get in parameter
+    /// </summary>
+    /// <param name="newParentAnchor"></param>
+    /// <returns></returns>
+    public DNAMonster getRotateSubDna(Vector3 newParentAnchor)
+    {
+        DNAMonster res = new DNAMonster(this);
+        if (parentAnchor == newParentAnchor)
+        {
+            return this;
+        }
+        Vector3 axis = Vector3.zero;
+        //si on garde le meme axe (inverser) on doit effectuer 2 fois la rotation
+        if (new Vector3((int)Mathf.Abs(parentAnchor.x), (int)Mathf.Abs(parentAnchor.y), (int)Mathf.Abs(parentAnchor.z)) == new Vector3((int)Mathf.Abs(newParentAnchor.x), (int)Mathf.Abs(newParentAnchor.y), (int)Mathf.Abs(newParentAnchor.z)))
+        {
+            axis = new Vector3((int)Mathf.Abs(parentAnchor.z), (int)Mathf.Abs(parentAnchor.x), (int)Mathf.Abs(parentAnchor.y));
+            res.changeAnchorFromAxis(axis);
+        }
+        else
+        {
+            int x = 1 - (int)Mathf.Abs(parentAnchor.x) - (int)Mathf.Abs(newParentAnchor.x);
+            int y = 1 - (int)Mathf.Abs(parentAnchor.y) - (int)Mathf.Abs(newParentAnchor.y);
+            int z = 1 - (int)Mathf.Abs(parentAnchor.z) - (int)Mathf.Abs(newParentAnchor.z);
+            axis = new Vector3(x, y, z);
+            if ((newParentAnchor.x > 0 || newParentAnchor.y > 0 || newParentAnchor.z > 0) && (parentAnchor.x < 0 || parentAnchor.y < 0 || parentAnchor.z < 0))
+                axis = new Vector3(-x, -y, -z);
+            else if ((newParentAnchor.x < 0 || newParentAnchor.y < 0 || newParentAnchor.z < 0) && (parentAnchor.x > 0 || parentAnchor.y > 0 || parentAnchor.z > 0))
+                axis = new Vector3(-x, -y, -z);
+        }
+        res.changeAnchorFromAxis(axis);
+        return res;
+    }
+    /// <summary>
+    /// return the newAnchor corresponding to the oldAnchor get in parameter turn by 90 degree arround the axis 
+    /// </summary>
+    /// <param name="oldAnchor"></param>
+    /// <param name="axis"></param>
+    /// <returns></returns>
+    private Vector3 getNextAnchorFromAxis(Vector3 oldAnchor,Vector3 axis)
+    {
+        if(axis == Vector3.zero)
+        {
+            Debug.Log("ERROR in DNAMonster.getNextAnchorFromAxis");
+            return Vector3.zero;
+        }
+        if(axis == Vector3.right || axis == Vector3.left)
+        {
+            if (oldAnchor == Vector3.up) return axis.x * Vector3.forward;
+            if (oldAnchor == Vector3.forward) return axis.x * Vector3.down;
+            if (oldAnchor == Vector3.down) return axis.x * Vector3.back;
+            if (oldAnchor == Vector3.back) return axis.x * Vector3.up;
+        }
+        if (axis == Vector3.up || axis == Vector3.down)
+        {
+            if (oldAnchor == Vector3.right) return axis.y * Vector3.forward;
+            if (oldAnchor == Vector3.forward) return axis.y * Vector3.left;
+            if (oldAnchor == Vector3.left) return axis.y * Vector3.back;
+            if (oldAnchor == Vector3.back) return axis.y * Vector3.right;
+        }
+        if (axis == Vector3.forward || axis == Vector3.back)
+        {
+            if (oldAnchor == Vector3.right) return axis.z * Vector3.up;
+            if (oldAnchor == Vector3.up) return axis.z * Vector3.left;
+            if (oldAnchor == Vector3.left) return axis.z * Vector3.down;
+            if (oldAnchor == Vector3.down) return axis.z * Vector3.right;
+        }
+        return oldAnchor;
+    }
+    /// <summary>
+    /// change all anchor of a subDna Tree
+    /// </summary>
+    /// <param name="axis"></param>
+    private void changeAnchorFromAxis(Vector3 axis)
+    {
+        parentAnchor = getNextAnchorFromAxis(parentAnchor, axis);
+        if(children != null)
+        {
+            for (int i = 0; i < children.Length; i++)
+            {
+                anchor[i] = getNextAnchorFromAxis(anchor[i], axis);
+                children[i].changeAnchorFromAxis(axis);
+            }
+        }
+
+    }
+
 }
