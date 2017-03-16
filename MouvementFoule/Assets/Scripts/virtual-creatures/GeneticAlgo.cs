@@ -363,7 +363,7 @@ public class GeneticAlgo
                             mutateChangeAction(i);
                             break;
                         case 3:
-                            mutateTurnNode(i);
+                            //mutateTurnNode(i);
                             break;
                         case 4:
                             mutateRescaleBodypart(i);

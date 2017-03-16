@@ -40,13 +40,14 @@ public class BodyPart{
     }*/
     public BodyPart(BodyType type, Vector3 axe)
     {
+        this.type = type;
         switch (type)
         {
             case BodyType.LEG:
-                size = new Vector3(Random.Range(MIN, MAX), Random.Range(MIN, MAX), Random.Range(MIN, MAX));
+                size = new Vector3(Random.Range(MIN + axe.x * MAX / 2, MAX/2 + axe.x * MAX / 2), Random.Range(MIN + axe.y * MAX / 2, MAX/2 + axe.y * MAX / 2), Random.Range(MIN + axe.z * MAX / 2, MAX/2 + axe.z * MAX / 2));
                 break;
             case BodyType.BODY:
-                size = new Vector3(Random.Range(MAX / 2, MAX), Random.Range(MAX / 2, MAX), Random.Range(MAX / 2, MAX));
+                size = new Vector3(Random.Range(MIN + MAX / 2 - axe.x * MAX / 2, MAX - axe.x * MAX / 2), Random.Range(MIN + MAX / 2 - axe.y * MAX / 2, MAX - axe.y * MAX / 2), Random.Range(MIN + MAX / 2 - axe.z * MAX / 2, MAX - axe.z * MAX / 2));
                 break;
             case BodyType.CUBE:
                 float rand = Random.Range(MAX / 2, MAX);

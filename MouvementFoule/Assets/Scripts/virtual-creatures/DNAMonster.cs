@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Phenotype { LINE, SPIDER, UNIQUE}
+public enum Phenotype { LINE, SPIDER, UNIQUE, SNAKE, RANDOM}
 
 [System.Serializable]
 public class DNAMonster{
-    public static Vector3[] LOOK_UP_TABLE_XZ = { Vector3.right, Vector3.forward, Vector3.left, Vector3.back };
     private BodyPart bodyPart;
     private DNAMonster[] children;
     private Vector3[] anchor;
@@ -93,7 +92,7 @@ public class DNAMonster{
                 {
                     children = new DNAMonster[1];
                     anchor = new Vector3[1];
-                    anchor[0] = Vector3.right;
+                    anchor[0] = newParentAnchor;
                     children[0] = new DNAMonster(Phenotype.LINE, anchor[0], length);
                 }
                 break;
@@ -107,14 +106,63 @@ public class DNAMonster{
                 action = new MoveAction_2(false);
                 parentAnchor = newParentAnchor;
                 //create leg
-                DNAMonster leg = new DNAMonster(Phenotype.LINE, Vector3.right, 2);
+                DNAMonster legX = new DNAMonster(Phenotype.LINE, Vector3.right, 2);
+                DNAMonster legZ = new DNAMonster(Phenotype.LINE, Vector3.forward, 2);
                 //create 4 'legs' by rotating leg
                 children = new DNAMonster[4];
                 anchor = new Vector3[4];
-                for (int i = 0; i < 4; i++)
+                children[0] = new DNAMonster(legX.getRotateSubDna(Vector3.right));
+                anchor[0] = Vector3.right;
+                children[1] = new DNAMonster(legX.getRotateSubDna(Vector3.left));
+                anchor[1] = Vector3.left;
+                children[2] = new DNAMonster(legZ.getRotateSubDna(Vector3.forward));
+                anchor[2] = Vector3.forward;
+                children[3] = new DNAMonster(legZ.getRotateSubDna(Vector3.back));
+                anchor[3] = Vector3.back;
+                break;
+            case Phenotype.SNAKE:
+                bodyPart = new BodyPart(BodyType.CUBE, newParentAnchor);
+                action = new MoveAction(ActionType.NULL);
+                parentAnchor = newParentAnchor;
+                //create leg
+                DNAMonster leg = new DNAMonster(Phenotype.LINE, Vector3.forward, 4);
+                //create 4 'legs' by rotating leg
+                children = new DNAMonster[1];
+                anchor = new Vector3[1];
+                children[0] = new DNAMonster(leg.getRotateSubDna(Vector3.back));
+                anchor[0] = Vector3.back;
+                break;
+            case Phenotype.RANDOM:
+                if(newParentAnchor == Vector3.zero)
                 {
-                    children[i] = new DNAMonster(leg.getRotateSubDna(LOOK_UP_TABLE_XZ[i]));
-                    anchor[i] = LOOK_UP_TABLE_XZ[i];
+                    bodyPart = new BodyPart(BodyType.CUBE, newParentAnchor);
+                    action = new MoveAction(ActionType.NULL);
+                    parentAnchor = newParentAnchor;
+                }
+                else
+                {
+                    bodyPart = new BodyPart(BodyType.DEFAULT, newParentAnchor);
+                    action = new MoveAction();
+                    parentAnchor = newParentAnchor;
+                }
+                int nbChildren = Random.Range(1,4);
+                anchor = new Vector3[nbChildren];
+                children = new DNAMonster[nbChildren];
+                for(int i = 0; i < nbChildren; i++)
+                {
+                    int isLineOrRandom = Random.Range(0, 5);
+                    int l = Random.Range(2, 6);
+                    Vector3 a = getFreeAnchorSlot();
+                    if(isLineOrRandom != 0)
+                    {
+                        anchor[i] = new Vector3((int)Mathf.Abs(a.x), (int)Mathf.Abs(a.y), (int)Mathf.Abs(a.z));
+                        children[i] = new DNAMonster(Phenotype.LINE, anchor[i], l).getRotateSubDna(a);
+                    }
+                    else
+                    {
+                        anchor[i] = new Vector3((int)Mathf.Abs(a.x), (int)Mathf.Abs(a.y), (int)Mathf.Abs(a.z));
+                        children[i] = new DNAMonster(Phenotype.RANDOM, anchor[i], l).getRotateSubDna(a);
+                    }
                 }
                 break;
             default:
