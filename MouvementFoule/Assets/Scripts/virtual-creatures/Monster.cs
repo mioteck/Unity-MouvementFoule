@@ -158,7 +158,7 @@ public class Monster : MonoBehaviour {
             Vector3 ps = parent.transform.localScale;
             // Vector3 anchor = new Vector3(a.x * (ps.x / 2), a.y * (ps.y / 2), a.z * (ps.z / 2));
             // joint.axis = new Vector3(a.x+0.2f, a.y+0.2f, a.z+0.2f).normalized;
-            
+
             //joint.swingAxis = new Vector3(Mathf.Abs(a.x), Mathf.Abs(a.y), Mathf.Abs(a.z));
             //configure lowTwistLimit
             softJointLimit.limit = -80; // -10 is better
@@ -169,7 +169,7 @@ public class Monster : MonoBehaviour {
             //configure lowTwistLimit
             softJointLimit.contactDistance = 0;
             joint.lowTwistLimit = softJointLimit;
-            
+
             //configure highTwistLimit
             softJointLimit.limit = 80; // 80 is better
             softJointLimit.bounciness = 0;

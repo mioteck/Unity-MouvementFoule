@@ -80,13 +80,12 @@ public class DNAMonster{
             }
         }
     }
-
-    public DNAMonster(Phenotype phenotype, Vector3 newParentAnchor, int length = 0)
+    public DNAMonster(Phenotype phenotype, Vector3 newParentAnchor, int length = 2)
     {
         switch (phenotype)
         {
             case Phenotype.LINE:
-                bodyPart = new BodyPart(BodyType.LEG);
+                bodyPart = new BodyPart(BodyType.LEG, newParentAnchor);
                 action = new MoveAction_2(true);
                 parentAnchor = newParentAnchor;
                 length--;
@@ -99,12 +98,12 @@ public class DNAMonster{
                 }
                 break;
             case Phenotype.UNIQUE:
-                bodyPart = new BodyPart(BodyType.DEFAULT);
+                bodyPart = new BodyPart(BodyType.DEFAULT, newParentAnchor);
                 action = new MoveAction_2(true);
                 parentAnchor = newParentAnchor;
                 break;
             case Phenotype.SPIDER:
-                bodyPart = new BodyPart(BodyType.CUBE);
+                bodyPart = new BodyPart(BodyType.CUBE, newParentAnchor);
                 action = new MoveAction_2(false);
                 parentAnchor = newParentAnchor;
                 //create leg
@@ -358,6 +357,29 @@ public class DNAMonster{
         }
         Debug.Log("ERROR in DNAMonster.getSubDna()");
         return null;
+    }
+    /// <summary>
+    /// set a subDna : WARNING : use it with carrefully the new subDna must be accordable
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <param name="newSubDna"></param>
+    public void setSubDna(int pos, DNAMonster newSubDna)
+    {
+        for (int i = 0; i < children.Length; i++)
+        {
+            if (pos == 1)
+            {
+                children[i] = new DNAMonster(newSubDna);
+                anchor[i] = newSubDna.getParentAnchor();
+                break;
+            }
+            pos -= children[i].getSize();
+            if (pos <= 0)
+            {
+                pos += children[i].getSize() - 1;
+                children[i].setSubDna(pos, newSubDna);
+            }
+        }
     }
     /// <summary>
     /// return the dna monster rotate in a way that his parentAnchor will now be the anchor get in parameter
