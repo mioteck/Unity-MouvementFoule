@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Monster : MonoBehaviour {
     //time of life
-    public static float LifeDuration = 8;
+    public static float LifeDuration = 15;
     //cube Prefab
     public GameObject prefab;
     // True when one of the joints of the monster breaks
@@ -27,6 +27,7 @@ public class Monster : MonoBehaviour {
     void Awake()
     {
         isGenerate = false;
+        timeCount = -1.0f;
     }
 	
 	// Update is called once per frame
@@ -39,7 +40,7 @@ public class Monster : MonoBehaviour {
             }
             else
             {
-                timeCount += Time.deltaTime;
+                timeCount += Time.fixedDeltaTime;
                 if (timeCount > 1.0f)
                     timeCount = -1.0f;
                 run(timeCount);
@@ -73,6 +74,7 @@ public class Monster : MonoBehaviour {
         //need to instanciate the first bodypart 
         go[id] = Instantiate(prefab, startPos, new Quaternion(0, 0, 0, 0));
         go[id].layer = physxLayer;
+
         go[id].transform.localScale = dna.getBodyPart().getSize();
         if (dna.getChildren() != null)
         {
@@ -141,20 +143,23 @@ public class Monster : MonoBehaviour {
             joint.connectedBody = child.GetComponent<Rigidbody>();
             Vector3 a = childDna.getParentAnchor();
             Vector3 ps = parent.transform.localScale;
-            Vector3 anchor = new Vector3(a.x * (ps.x / 2), a.y * (ps.y / 2), a.z * (ps.z / 2));
-            joint.anchor = anchor;
-            joint.axis = new Vector3(a.x+0.2f, a.y+0.2f, a.z+0.2f).normalized;
+            // Vector3 anchor = new Vector3(a.x * (ps.x / 2), a.y * (ps.y / 2), a.z * (ps.z / 2));
+            // joint.axis = new Vector3(a.x+0.2f, a.y+0.2f, a.z+0.2f).normalized;
             
             //joint.swingAxis = new Vector3(Mathf.Abs(a.x), Mathf.Abs(a.y), Mathf.Abs(a.z));
             //configure lowTwistLimit
-            softJointLimit.limit = -180; // -10 is better
-            softJointLimit.bounciness = 1;
+            softJointLimit.limit = -20; // -10 is better
+            softJointLimit.bounciness = 0;
+            joint.anchor = 0.5f * childDna.getParentAnchor();
+            //joint.axis = new Vector3(a.z, a.x, a.y);
+            //joint.swingAxis = new Vector3(Mathf.Abs(a.x), Mathf.Abs(a.y), Mathf.Abs(a.z));
+            //configure lowTwistLimit
             softJointLimit.contactDistance = 0;
             joint.lowTwistLimit = softJointLimit;
             
             //configure highTwistLimit
-            softJointLimit.limit = 180; // 80 is better
-            softJointLimit.bounciness = 1;
+            softJointLimit.limit = 80; // 80 is better
+            softJointLimit.bounciness = 0;
             softJointLimit.contactDistance = 0;
             joint.highTwistLimit = softJointLimit;
 
@@ -164,20 +169,20 @@ public class Monster : MonoBehaviour {
             joint.swingLimitSpring = softJointLimitSpring;
 
             //configure Swing 1 limit
-            softJointLimit.limit = 0.2f;
+            softJointLimit.limit = 40;
             softJointLimit.bounciness = 0;
             softJointLimit.contactDistance = 0;
             joint.swing1Limit = softJointLimit;
 
             //configure Swing 2 limit
-            softJointLimit.limit = 0.2f;
+            softJointLimit.limit = 40;
             softJointLimit.bounciness = 0;
             softJointLimit.contactDistance = 0;
             joint.swing2Limit = softJointLimit;
 
             //configure resistance of the joint
-            joint.breakForce = 3000;
-            joint.breakForce = 3000;
+            joint.breakForce = 15000;
+            joint.breakTorque = 15000;
         }
     }
 

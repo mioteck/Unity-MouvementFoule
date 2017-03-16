@@ -1,26 +1,43 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Xml;
-using System.Xml.Serialization;
 using UnityEngine;
 
 [Serializable]
 public struct DNAMonsterSer
 {
-    public BodyPart bodyPart;
+    public Vector3 bodyPartSize;
     public Vector3 parentAnchor;
     public int score;
     public Vector3[] anchors;
     public DNAMonsterSer[] children;
+    public MoveActionSer_2 action;
 }
 
 [Serializable]
-public struct BodyPartSer
+public struct MoveActionSer
 {
-    public Vector3 size;
+    public List<ActionType> action;
+    public List<int> power;
+    public List<Vector3> axe;
+}
+
+[Serializable]
+public struct MoveActionSer_2
+{
+    public float waveSpeedX;
+    public float waveSpeedY;
+    public float waveSpeedZ;
+
+    public float frequencyX;
+    public float frequencyY;
+    public float frequencyZ;
+
+    public Vector3 angularVelocityFactor;
+
+    public MoveAction_2.MovementType movementType;
+
+    public bool freezeNotOnGround;
 }
 
 // Utility class to serialize/deserialize monster's DNA
@@ -35,9 +52,7 @@ public class DNASerializer {
     // string -> DNA
     public static DNAMonster deserializeMonster(string dnaStr)
     {
-        DNAMonsterSer receivedDNA = JsonUtility.FromJson<DNAMonsterSer>(dnaStr);
-
-        return translateDNAMonsterSer(receivedDNA);
+        return translateDNAMonsterSer(JsonUtility.FromJson<DNAMonsterSer>(dnaStr));
     }
 
     // DNA -> file
@@ -66,7 +81,7 @@ public class DNASerializer {
     private static DNAMonsterSer translateDNAMonster(DNAMonster dnaMonster)
     {
         DNAMonsterSer serDna = new DNAMonsterSer();
-        serDna.bodyPart = dnaMonster.getBodyPart();
+        serDna.bodyPartSize = dnaMonster.getBodyPart().getSize();
         serDna.parentAnchor = dnaMonster.getParentAnchor();
         serDna.score = dnaMonster.getScore();
         serDna.anchors = dnaMonster.getAnchor();
@@ -85,11 +100,55 @@ public class DNASerializer {
             serDna.children = null;
         }
 
+        /*serDna.action = new MoveActionSer();
+        serDna.action.action = new List<ActionType>();
+        foreach (ActionType actionType in dnaMonster.getAction().action)
+        {
+            serDna.action.action.Add(actionType);
+        }
+
+        serDna.action.axe = new List<Vector3>();
+        foreach (Vector3 v in dnaMonster.getAction().axe)
+        {
+            serDna.action.axe.Add(v);
+        }
+
+        serDna.action.power = new List<int>();
+        foreach (int power in dnaMonster.getAction().power)
+        {
+            serDna.action.power.Add(power);
+        }*/
+
+        serDna.action = new MoveActionSer_2();
+        serDna.action.movementType = dnaMonster.getAction().movementType;
+        serDna.action.angularVelocityFactor = dnaMonster.getAction().angularVelocityFactor;
+        serDna.action.freezeNotOnGround = dnaMonster.getAction().freezeNotOnGround;
+
+        serDna.action.frequencyX = dnaMonster.getAction().frequencyX;
+        serDna.action.frequencyY = dnaMonster.getAction().frequencyY;
+        serDna.action.frequencyZ = dnaMonster.getAction().frequencyZ;
+
+        serDna.action.waveSpeedX = dnaMonster.getAction().waveSpeedX;
+        serDna.action.waveSpeedX = dnaMonster.getAction().waveSpeedY;
+        serDna.action.waveSpeedX = dnaMonster.getAction().waveSpeedZ;
+
         return serDna;
     }
     
     private static DNAMonster translateDNAMonsterSer(DNAMonsterSer dna)
     {
-        return new DNAMonster(dna.bodyPart, dna.children, dna.anchors, dna.parentAnchor);
+        MoveAction_2 action = new MoveAction_2(false);
+
+        action.movementType = dna.action.movementType;
+        action.angularVelocityFactor = dna.action.angularVelocityFactor;
+        action.freezeNotOnGround = dna.action.freezeNotOnGround;
+        action.frequencyX = dna.action.frequencyX;
+        action.frequencyY = dna.action.frequencyY;
+        action.frequencyZ = dna.action.frequencyZ;
+        action.waveSpeedX = dna.action.waveSpeedX;
+        action.waveSpeedY = dna.action.waveSpeedY;
+        action.waveSpeedZ = dna.action.waveSpeedZ;
+
+        return new DNAMonster(action, new BodyPart(dna.bodyPartSize), dna.children, dna.anchors, dna.parentAnchor);
     }
 }

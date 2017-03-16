@@ -1,26 +1,44 @@
 ﻿using UnityEngine;
 
+public enum BodyType { LEG, BODY, CUBE, DEFAULT };
 
 public class BodyPart{
-    public static float MAX_X = 4.0f;
-    public static float MAX_Y = 4.0f;
-    public static float MAX_Z = 4.0f;
+    public static float MAX = 6.0f;
+    public static float MIN = 0.2f;
     private Vector3 size;
+    private BodyType type;
 
-    public BodyPart(float x, float y, float z)
+    public BodyPart(Vector3 newSize, BodyType newType = BodyType.DEFAULT)
     {
-        size = new Vector3(x, y, z);
-    }
-    public BodyPart()
-    {
-        size = new Vector3(Random.Range(0.3f, MAX_X), Random.Range(0.3f, MAX_Y), Random.Range(0.3f, MAX_Z));
+        size = newSize;
+        type = newType;
     }
     public BodyPart(BodyPart bodyPart)
     {
-        size.x = bodyPart.size.x;
-        size.y = bodyPart.size.y;
-        size.z = bodyPart.size.z;
+        type = bodyPart.type;
+        size = bodyPart.size;
     }
+    public BodyPart(BodyType type)
+    {
+        switch (type)
+        {
+            case BodyType.LEG:
+                size = new Vector3(Random.Range(MIN, MAX), Random.Range(MIN, MAX), Random.Range(MIN, MAX));
+                break;
+            case BodyType.BODY: 
+                size = new Vector3(Random.Range(MAX / 2, MAX), Random.Range(MAX / 2, MAX), Random.Range(MAX / 2, MAX));
+                break;
+            case BodyType.CUBE:
+                float rand = Random.Range(MAX / 2, MAX);
+                size = new Vector3(rand, rand, rand);
+                break;
+            default:
+                type = BodyType.DEFAULT;
+                size = new Vector3(Random.Range(MIN, MAX), Random.Range(MIN, MAX), Random.Range(MIN, MAX));
+                break;
+        }
+    }
+
     public Vector3 getSize()
     {
         return size;
@@ -29,4 +47,13 @@ public class BodyPart{
     {
         size = newSize;
     }
+    public BodyType getType()
+    {
+        return type;
+    }
+    public void setType(BodyType newType)
+    {
+        type = newType;
+    }
+
 }
