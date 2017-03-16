@@ -54,7 +54,6 @@ public class DNAMonster{
             this.children = null;
         }
     } 
-
     public DNAMonster(Vector3 parentAnchor, int depth = 0)
     {
         bodyPart = new BodyPart();
