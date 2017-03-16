@@ -26,28 +26,32 @@ public class GeneticAlgo
 
     public static int generationCount = 0;
 
+    private static Phenotype phenotype;
+
     private static DNAMonster[] population;
     private static DNAMonster[] parentPopulation;
 
     /// <summary>
     /// initialise the population randomly for the first generation of monsters
     /// </summary>
-    public static void initAlgo()
+    public static void initAlgo(Phenotype phenotype)
     {
         if (POPULATION_SIZE % POPULATION_CHUNK_SIZE != 0)
         {
             Debug.Log("POPULATION_CHUNK_SIZE must be a multiple of POPULATION_SIZE");
         }
 
+        GeneticAlgo.phenotype = phenotype;
+
         population = new DNAMonster[POPULATION_SIZE];
         parentPopulation = new DNAMonster[PARENT_POPULATION_SIZE];
         for (int i = 0; i < POPULATION_SIZE; ++i)
         {
-            population[i] = new DNAMonster(Phenotype.SPIDER, Vector3.zero);
+            population[i] = new DNAMonster(phenotype, Vector3.zero);
         }
         for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
         {
-            parentPopulation[i] = new DNAMonster(Phenotype.SPIDER, Vector3.zero);
+            parentPopulation[i] = new DNAMonster(phenotype, Vector3.zero);
         }
         initializeChunk();
         initializeParentPopulation();
@@ -71,7 +75,7 @@ public class GeneticAlgo
     {
         for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
         {
-            parentPopulation[i] = new DNAMonster(Phenotype.SPIDER, Vector3.zero);
+            parentPopulation[i] = new DNAMonster(phenotype, Vector3.zero);
         }
     }
 
@@ -82,7 +86,7 @@ public class GeneticAlgo
     {
         for (int i = 0; i < POPULATION_CHUNK_SIZE; ++i)
         {
-            population[currentChunk * POPULATION_CHUNK_SIZE + i] = new DNAMonster(Phenotype.SPIDER, Vector3.zero);
+            population[currentChunk * POPULATION_CHUNK_SIZE + i] = new DNAMonster(phenotype, Vector3.zero);
         }
     }
 
@@ -293,7 +297,7 @@ public class GeneticAlgo
         }
         for (int i = 0; i < SELECTION_NB_RANDOM_CHILREN; i++)
         {
-            population[i] = new DNAMonster(Phenotype.SPIDER, Vector3.zero);
+            population[i] = new DNAMonster(phenotype, Vector3.zero);
         }
     }
     /// <summary>
@@ -489,7 +493,7 @@ public class GeneticAlgo
         {
             int posFather1 = Random.Range(0, parentPopulation[idFather].getChildren().Length);
             int posMother1 = Random.Range(0, parentPopulation[idMother].getChildren().Length);
-            population[idChild] = new DNAMonster(Phenotype.SPIDER, Vector3.zero);
+            population[idChild] = new DNAMonster(phenotype, Vector3.zero);
             population[idChild].getChildren()[0] = parentPopulation[idMother].getChildren()[posMother1].getRotateSubDna(Vector3.right);
             population[idChild].getChildren()[1] = parentPopulation[idMother].getChildren()[posMother1].getRotateSubDna(Vector3.left);
             population[idChild].getChildren()[2] = parentPopulation[idFather].getChildren()[posFather1].getRotateSubDna(Vector3.forward);
@@ -507,7 +511,7 @@ public class GeneticAlgo
         {
             int posFather1 = Random.Range(0, parentPopulation[idFather].getChildren().Length);
             int posMother1 = Random.Range(0, parentPopulation[idMother].getChildren().Length);
-            population[idChild] = new DNAMonster(Phenotype.SPIDER, Vector3.zero);
+            population[idChild] = new DNAMonster(phenotype, Vector3.zero);
             population[idChild].getChildren()[0] = parentPopulation[idMother].getChildren()[posMother1].getRotateSubDna(Vector3.right);
             population[idChild].getChildren()[1] = parentPopulation[idMother].getChildren()[posMother1].getRotateSubDna(Vector3.forward);
             population[idChild].getChildren()[2] = parentPopulation[idFather].getChildren()[posFather1].getRotateSubDna(Vector3.left);
@@ -528,7 +532,7 @@ public class GeneticAlgo
             int posFather2 = Random.Range(0, parentPopulation[idFather].getChildren().Length);
             int posMother1 = Random.Range(0, parentPopulation[idMother].getChildren().Length);
             int posMother2 = Random.Range(0, parentPopulation[idMother].getChildren().Length);
-            population[idChild] = new DNAMonster(Phenotype.SPIDER, Vector3.zero);
+            population[idChild] = new DNAMonster(phenotype, Vector3.zero);
             population[idChild].getChildren()[0] = parentPopulation[idMother].getChildren()[posMother1].getRotateSubDna(Vector3.right);
             population[idChild].getChildren()[1] = parentPopulation[idMother].getChildren()[posMother2].getRotateSubDna(Vector3.left);
             population[idChild].getChildren()[2] = parentPopulation[idFather].getChildren()[posFather1].getRotateSubDna(Vector3.forward);
