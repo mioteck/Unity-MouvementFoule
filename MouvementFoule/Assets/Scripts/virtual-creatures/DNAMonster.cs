@@ -4,6 +4,7 @@ using UnityEngine;
 
 [System.Serializable]
 public class DNAMonster{
+    public static Vector3[] LOOK_UP_TABLE_XZ = { Vector3.right, Vector3.forward, Vector3.left, Vector3.back };
     public static int [] NB_CHILDREN_CHANCE = { 10, 90, 0, 0, 0, 0 };//% de chance d'avoir 0, 1, 2, 3, 4, 5 enfants
     public static int MAX_DEPTH = 4;
     public static int MAX_CHILDREN = 1; //<=5 un cube n'a que 6 face!!!!! il faut garder un slot pour le parent
@@ -106,6 +107,42 @@ public class DNAMonster{
             }
         }
     }
+
+    public DNAMonster(string phenotype, Vector3 newParentAnchor, int length = 0)
+    {
+        switch (phenotype)
+        {
+            case "line":
+                bodyPart = new BodyPart("leg");
+                action = new MoveAction();
+                parentAnchor = newParentAnchor;
+                length--;
+                if (length > 0)
+                {
+                    children = new DNAMonster[1];
+                    anchor = new Vector3[1];
+                    anchor[0] = Vector3.right;
+                    children[0] = new DNAMonster("line", anchor[0], length);
+                }
+                break;
+            case "spider":
+                bodyPart = new BodyPart("cube");
+                action = new MoveAction();
+                parentAnchor = newParentAnchor;
+                //create leg
+                DNAMonster leg = new DNAMonster("line", Vector3.right, 2);
+                //create 4 'legs' by rotating leg
+                children = new DNAMonster[4];
+                anchor = new Vector3[4];
+                for (int i = 0; i < 4; i++)
+                {
+                    children[i] = new DNAMonster(leg.getRotateSubDna(LOOK_UP_TABLE_XZ[i]));
+                    anchor[i] = LOOK_UP_TABLE_XZ[i];
+                }
+                break;
+        }
+    }
+
 
     public void createAnchor(int size)
     {

@@ -2,30 +2,20 @@
 
 
 public class BodyPart{
-    public static float MAX_X = 5.0f;
-    public static float MAX_Y = 5.0f;
-    public static float MAX_Z = 5.0f;
+    public static float MAX = 5.0f;
     private Vector3 size;
 
     public BodyPart(Vector3 size)
     {
         this.size = size;
     }
-
     public BodyPart(float x, float y, float z)
     {
         size = new Vector3(x, y, z);
     }
     public BodyPart()
     {
-        size = new Vector3(Random.Range(0.1f, MAX_X), Random.Range(0.1f, MAX_Y), Random.Range(0.1f, MAX_Z));
-        /*int rand = Random.Range(0, 3);
-        if (rand == 0)
-            size = new Vector3(5.0f, 0.2f, 0.2f);
-        else if (rand == 1)
-            size = new Vector3(0.2f, 5.0f, 0.2f);
-        else
-            size = new Vector3(0.2f, 0.2f, 5.0f);*/
+        size = new Vector3(Random.Range(0.1f, MAX), Random.Range(0.1f, MAX), Random.Range(0.1f, MAX));
     }
     public BodyPart(BodyPart bodyPart)
     {
@@ -33,6 +23,23 @@ public class BodyPart{
         size.y = bodyPart.size.y;
         size.z = bodyPart.size.z;
     }
+    public BodyPart(string type)
+    {
+        switch (type)
+        {
+            case "leg":
+                size = new Vector3(Random.Range(MAX / 2, MAX), Random.Range(0,MAX / 2), Random.Range(0, MAX / 2));
+                break;
+            case "cube":
+                float rand = Random.Range(MAX / 2, MAX);
+                size = new Vector3(rand,rand,rand);
+                break;
+            case "body": 
+                size = new Vector3(Random.Range(0, MAX), Random.Range(0, MAX), Random.Range(0, MAX));
+                break;
+        }
+    }
+
     public Vector3 getSize()
     {
         return size;

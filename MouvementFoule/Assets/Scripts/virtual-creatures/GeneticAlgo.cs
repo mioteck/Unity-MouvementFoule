@@ -34,11 +34,11 @@ public class GeneticAlgo{
         parentPopulation = new DNAMonster[PARENT_POPULATION_SIZE];
         for (int i = 0; i < POPULATION_SIZE; ++i)
         {
-            population[i] = new DNAMonster(Vector3.zero, 0);
+            population[i] = new DNAMonster("spider", Vector3.zero);
         }
         for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
         {
-            parentPopulation[i] = new DNAMonster(Vector3.zero, 0);
+            parentPopulation[i] = new DNAMonster("spider", Vector3.zero);
         }
     }
     /// <summary>
@@ -353,6 +353,21 @@ public class GeneticAlgo{
     /// <param name="idFather"></param>
     public static void crossoverCrossDNA(int idChild, int idMother, int idFather)
     {
+        if (parentPopulation[idMother].getChildren() != null && parentPopulation[idFather].getChildren() != null)
+        {
+            int posFather1 = Random.Range(0, parentPopulation[idFather].getChildren().Length);
+            int posFather2 = Random.Range(0, parentPopulation[idFather].getChildren().Length);
+            int posMother1 = Random.Range(0, parentPopulation[idMother].getChildren().Length);
+            int posMother2 = Random.Range(0, parentPopulation[idMother].getChildren().Length);
+            population[idChild] = new DNAMonster("spider", Vector3.zero);
+            population[idChild].getChildren()[0] = parentPopulation[idMother].getChildren()[posMother1].getRotateSubDna(Vector3.right);
+            population[idChild].getChildren()[1] = parentPopulation[idMother].getChildren()[posMother1].getRotateSubDna(Vector3.left);
+            population[idChild].getChildren()[2] = parentPopulation[idFather].getChildren()[posFather1].getRotateSubDna(Vector3.forward);
+            population[idChild].getChildren()[3] = parentPopulation[idFather].getChildren()[posFather1].getRotateSubDna(Vector3.back);
+        }
+
+
+        /*
         if (parentPopulation[idMother].getSize() >= 2 && parentPopulation[idFather].getSize() >= 2)
         {
             //chose random subDna in root node of mother and father
@@ -388,7 +403,7 @@ public class GeneticAlgo{
                     temp.y = 1;
                 population[idChild].getSubDna(i).getBodyPart().setSize(temp);
             }
-        }
+        }*/
     }
 
 
