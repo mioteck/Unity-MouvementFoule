@@ -11,7 +11,7 @@ public class DNAMonster{
     private DNAMonster[] children;
     private Vector3[] anchor;
     private Vector3 parentAnchor;
-    private MoveAction action;
+    private MoveAction_2 action;
     private int score = 0;
 
     public DNAMonster(BodyPart bp, DNAMonsterSer[] children, Vector3[] anchor, Vector3 parentAnchor)
@@ -59,7 +59,8 @@ public class DNAMonster{
     {
         bodyPart = new BodyPart();
         this.parentAnchor = parentAnchor;
-        action = new MoveAction();
+        //action = new MoveAction();
+        action = new MoveAction_2(true);
         ++depth;
         if(depth <= MAX_DEPTH)
         {
@@ -279,7 +280,7 @@ public class DNAMonster{
     {
         return children;
     }
-    public void setSubDna(DNAMonster[] newChildren, Vector3[] newAnchor, MoveAction newAction)
+    public void setSubDna(DNAMonster[] newChildren, Vector3[] newAnchor, MoveAction_2 newAction)
     {
         children = newChildren;
         anchor = newAnchor;
@@ -307,11 +308,11 @@ public class DNAMonster{
     {
         score = newScore;
     }
-    public MoveAction getAction()
+    public MoveAction_2 getAction()
     {
         return action;
     }
-    public void setAction(MoveAction newAction)
+    public void setAction(MoveAction_2 newAction)
     {
         action = newAction;
     }

@@ -23,6 +23,8 @@ GameObject:
   - component: {fileID: 65302927066772712}
   - component: {fileID: 23850448527581942}
   - component: {fileID: 54913144470840814}
+  - component: {fileID: 114811078067091030}
+  - component: {fileID: 114733628230257300}
   m_Layer: 0
   m_Name: MonsterPart
   m_TagString: Untagged
@@ -108,3 +110,40 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114733628230257300
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1761473920762882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f68361650d07c894fb18f1f975fcfb4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  physic: {fileID: 54913144470840814}
+  waveSpeedX: 0
+  waveSpeedY: 0
+  waveSpeedZ: 0
+  frequencyX: 0
+  frequencyY: 0
+  frequencyZ: 0
+  angularVelocityFactor: {x: 0, y: 0, z: 0}
+  movementType: 0
+  freezeNotOnGround: 0
+  constraintRotationX: 0
+  constraintRotationY: 0
+  constraintRotationZ: 0
+--- !u!114 &114811078067091030
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1761473920762882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: feba925168c53734b9da76171863c4ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isGrounded: 0
+  physic: {fileID: 54913144470840814}

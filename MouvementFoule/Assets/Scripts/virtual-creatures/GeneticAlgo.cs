@@ -242,7 +242,7 @@ public class GeneticAlgo{
     public static void mutateChangeAction(int id)
     {
         int rand = Random.Range(1, population[id].getSize());
-        population[id].getSubDna(rand).setAction(new MoveAction());
+        population[id].getSubDna(rand).setAction(new MoveAction_2(true));
     }
     /// <summary>
     /// mutate -> swap action of two part of the DNA
@@ -252,7 +252,7 @@ public class GeneticAlgo{
     {
         int rand1 = Random.Range(1, population[id].getSize());
         int rand2 = Random.Range(1, population[id].getSize());
-        MoveAction a = population[id].getSubDna(rand1).getAction();
+        MoveAction_2 a = population[id].getSubDna(rand1).getAction();
         population[id].getSubDna(rand1).setAction(population[id].getSubDna(rand2).getAction());
         population[id].getSubDna(rand2).setAction(a);
     }

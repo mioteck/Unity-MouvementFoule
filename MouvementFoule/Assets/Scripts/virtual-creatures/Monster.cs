@@ -134,6 +134,7 @@ public class Monster : MonoBehaviour {
             SoftJointLimitSpring softJointLimitSpring = new SoftJointLimitSpring();
             CharacterJoint joint = parent.AddComponent<CharacterJoint>();
             addBreakDetectionTo(parent);
+
             //general setup
             joint.autoConfigureConnectedAnchor = true;
             joint.enableCollision = false;
@@ -143,31 +144,37 @@ public class Monster : MonoBehaviour {
             Vector3 anchor = new Vector3(a.x * (ps.x / 2), a.y * (ps.y / 2), a.z * (ps.z / 2));
             joint.anchor = anchor;
             joint.axis = new Vector3(a.x+0.2f, a.y+0.2f, a.z+0.2f).normalized;
+            
             //joint.swingAxis = new Vector3(Mathf.Abs(a.x), Mathf.Abs(a.y), Mathf.Abs(a.z));
             //configure lowTwistLimit
-            softJointLimit.limit = -180;
+            softJointLimit.limit = -180; // -10 is better
             softJointLimit.bounciness = 1;
             softJointLimit.contactDistance = 0;
             joint.lowTwistLimit = softJointLimit;
+            
             //configure highTwistLimit
-            softJointLimit.limit = 180;
+            softJointLimit.limit = 180; // 80 is better
             softJointLimit.bounciness = 1;
             softJointLimit.contactDistance = 0;
             joint.highTwistLimit = softJointLimit;
+
             //configure SwingLimitSpring
             softJointLimitSpring.spring = 0;
             softJointLimitSpring.damper = 0;
             joint.swingLimitSpring = softJointLimitSpring;
+
             //configure Swing 1 limit
             softJointLimit.limit = 0.2f;
             softJointLimit.bounciness = 0;
             softJointLimit.contactDistance = 0;
             joint.swing1Limit = softJointLimit;
+
             //configure Swing 2 limit
             softJointLimit.limit = 0.2f;
             softJointLimit.bounciness = 0;
             softJointLimit.contactDistance = 0;
             joint.swing2Limit = softJointLimit;
+
             //configure resistance of the joint
             joint.breakForce = 3000;
             joint.breakForce = 3000;
@@ -191,9 +198,8 @@ public class Monster : MonoBehaviour {
         {
             if (i < size)
             {
-                Vector3 torque = dna.getSubDna(i).getAction().getComputeTorque(t);
-                if (torque != Vector3.zero)
-                    g.GetComponent<Rigidbody>().AddRelativeTorque(torque);
+                Vector3 torque = dna.getSubDna(i).getAction().getComputeTorque(t, g.GetComponent<MemberSensor>());
+                g.GetComponent<MemberEffector>().angularForce = torque;
                 i++;
             }
         }
