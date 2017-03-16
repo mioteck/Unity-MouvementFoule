@@ -23,16 +23,16 @@ public class MoveAction_2 {
     {
         if (random)
         {
-            waveSpeedX = Random.Range(-30.0f, 30.0f);
-            waveSpeedY = Random.Range(-30.0f, 30.0f);
-            waveSpeedZ = Random.Range(-30.0f, 30.0f);
+            waveSpeedX = Random.Range(-15.0f, 15.0f);
+            waveSpeedY = Random.Range(-15.0f, 15.0f);
+            waveSpeedZ = Random.Range(-15.0f, 15.0f);
 
             frequencyX = Random.Range(0.0f, 20.0f);
             frequencyY = Random.Range(0.0f, 20.0f);
             frequencyZ = Random.Range(0.0f, 20.0f);
 
             angularVelocityFactor = new Vector3(
-                Random.Range(-10.0f, 10.0f), Random.Range(-10.0f, 10.0f), Random.Range(-10.0f, 10.0f)
+                Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f)
             );
 
             int rollthedice = Random.Range(0, 2);

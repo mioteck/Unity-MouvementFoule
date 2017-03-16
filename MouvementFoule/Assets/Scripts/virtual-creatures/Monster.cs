@@ -123,6 +123,19 @@ public class Monster : MonoBehaviour {
         go[id].layer = physxLayer;
         go[id].transform.position = childWorldLocation;
         go[id].transform.localScale = cs;
+
+        MemberEffector effector = go[id].GetComponent<MemberEffector>();
+        if (subDna.getBodyPart().getType() == BodyType.CUBE)
+        {
+            effector.constraintRotationX = true;
+            effector.constraintRotationY = true;
+            effector.constraintRotationZ = true;
+        }
+        else if (subDna.getBodyPart().getType() == BodyType.BODY)
+        {
+            effector.constraintRotationX = true;
+            effector.constraintRotationZ = true;
+        }
     }
     /// <summary>
     /// create joint according to parameters
@@ -148,7 +161,7 @@ public class Monster : MonoBehaviour {
             
             //joint.swingAxis = new Vector3(Mathf.Abs(a.x), Mathf.Abs(a.y), Mathf.Abs(a.z));
             //configure lowTwistLimit
-            softJointLimit.limit = -20; // -10 is better
+            softJointLimit.limit = -80; // -10 is better
             softJointLimit.bounciness = 0;
             joint.anchor = 0.5f * childDna.getParentAnchor();
             //joint.axis = new Vector3(a.z, a.x, a.y);

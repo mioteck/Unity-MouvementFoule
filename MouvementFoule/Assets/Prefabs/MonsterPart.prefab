@@ -104,7 +104,7 @@ BoxCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1761473920762882}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 5021880592ea02b4c8eb66caa46bd5b5, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -122,15 +122,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   physic: {fileID: 54913144470840814}
-  waveSpeedX: 0
-  waveSpeedY: 0
-  waveSpeedZ: 0
-  frequencyX: 0
-  frequencyY: 0
-  frequencyZ: 0
-  angularVelocityFactor: {x: 0, y: 0, z: 0}
-  movementType: 0
-  freezeNotOnGround: 0
+  angularForce: {x: 0, y: 0, z: 0}
   constraintRotationX: 0
   constraintRotationY: 0
   constraintRotationZ: 0

@@ -54,6 +54,8 @@ public class DNAMonster{
                 action.waveSpeedZ = d.action.waveSpeedZ;
 
                 this.children[i] = new DNAMonster(action, new BodyPart(d.bodyPartSize), d.children, d.anchors, d.parentAnchor);
+
+
             }
         }
         else
@@ -119,6 +121,33 @@ public class DNAMonster{
             default:
                 Debug.Log("ERROR in DNAMonster.constructor.phenotype");
                 break;
+        }
+
+        if (children != null && children.Length > 0)
+        {
+            bool[] childAt = { false, false, false, false, false, false };
+            for (int i = 0; i < children.Length; i++)
+            {
+                if (anchor[i] == Vector3.left)
+                    childAt[0] = true;
+                else if (anchor[i] == Vector3.right)
+                    childAt[1] = true;
+                else if (anchor[i] == Vector3.forward)
+                    childAt[2] = true;
+                else if (anchor[i] == Vector3.back)
+                    childAt[3] = true;
+                else if (anchor[i] == Vector3.up)
+                    childAt[4] = true;
+                else if (anchor[i] == Vector3.down)
+                    childAt[5] = true;
+            }
+
+            if (childAt[0] && childAt[1])
+                action.waveSpeedZ = 0.0f;
+            if (childAt[2] && childAt[3])
+                action.waveSpeedY = 0.0f;
+            if (childAt[4] && childAt[5])
+                action.waveSpeedX = 0.0f;
         }
     }
 
