@@ -201,6 +201,24 @@ public class DNAMonster{
             }
         }
     }
+
+    public void deleteChild(DNAMonster child)
+    {
+        Vector3[] newAnchors = new Vector3[getAnchor().Length - 1];
+        DNAMonster[] children = new DNAMonster[getChildren().Length - 1];
+
+        int count = 0;
+        for (int i = 0; i < getChildren().Length; i++)
+        {
+            if (getChildren()[i] != child)
+            {
+                children[count] = getChildren()[i];
+                newAnchors[count] = getAnchor()[i];
+                count++;
+            }
+        }
+    }
+
     public Vector3 getFreeAnchorSlot()
     {
         int rand = Random.Range(0, 6);

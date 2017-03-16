@@ -459,8 +459,22 @@ public class GeneticAlgo{
     /// <param name="id"></param>
     public static void mutateDeleteBodypart(int id)
     {
-        int rand = Random.Range(1, population[id].getSize());
-        population[id].getSubDna(rand).deleteOneBodypart();
+        DNAMonster parent = null;
+        DNAMonster dna = population[id];
+        int depth = 0;
+
+        while (dna.getChildren() != null)
+        {
+            int rand = Random.Range(0, dna.getChildren().Length);
+            parent = dna;
+            dna = dna.getChildren()[rand];
+            depth++;
+        }
+
+        if (depth > 1)
+        {
+            parent.deleteChild(dna);
+        }
     }
     /// <summary>
     /// mutate -> create new random action on one part of the DNA
