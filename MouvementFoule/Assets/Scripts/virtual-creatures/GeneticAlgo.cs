@@ -6,6 +6,10 @@ public class GeneticAlgo{
     public static int POPULATION_SIZE = 100;
     public static int PARENT_POPULATION_SIZE = 10;
 
+    public static int POPULATION_CHUNK_SIZE = 10;
+    private static int currentChunk = 0;
+    private static int currentGeneration = 0;
+
     public static int SELECTION_NB_RANDOM_CHILREN = 0;
     public static int SELECTION_NB_KEEP_PARENT = 2;
 
@@ -23,24 +27,23 @@ public class GeneticAlgo{
 
     private static DNAMonster[] population;
     private static DNAMonster[] parentPopulation;
-    public static int idInstance;
 
     /// <summary>
     /// initialise the population randomly for the first generation of monsters
     /// </summary>
     public static void initAlgo()
     {
+        if (POPULATION_SIZE % POPULATION_CHUNK_SIZE != 0)
+        {
+            Debug.Log("POPULATION_CHUNK_SIZE must be a multiple of POPULATION_SIZE");
+        }
+
         population = new DNAMonster[POPULATION_SIZE];
         parentPopulation = new DNAMonster[PARENT_POPULATION_SIZE];
-        for (int i = 0; i < POPULATION_SIZE; ++i)
-        {
-            population[i] = new DNAMonster(Vector3.zero, 0);
-        }
-        for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
-        {
-            parentPopulation[i] = new DNAMonster(Vector3.zero, 0);
-        }
+        initializeChunk();
+        initializeParentPopulation();
     }
+
     /// <summary>
     /// create the next generation
     /// </summary>
@@ -51,6 +54,95 @@ public class GeneticAlgo{
         crossover();
         mutate();
     }
+
+    /// <summary>
+    /// Initialize the parentPopulation list
+    /// </summary>
+    public static void initializeParentPopulation()
+    {
+        for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
+        {
+            parentPopulation[i] = new DNAMonster(Vector3.zero, 0);
+        }
+    }
+
+    /// <summary>
+    /// Initialize the current chunk of population for the current generation
+    /// </summary>
+    public static void initializeChunk()
+    {
+        for (int i = 0; i < POPULATION_CHUNK_SIZE; ++i)
+        {
+            population[currentChunk * POPULATION_CHUNK_SIZE + i] = new DNAMonster(Vector3.zero, 0);
+        }
+    }
+
+    /// <summary>
+    /// Tells GeneticAlgo to init the next chunk
+    /// </summary>
+    public static void nextChunk()
+    {
+        currentChunk++;
+        initializeChunk();
+    }
+
+    /// <summary>
+    /// Tells GeneticAlgo to initialize the next generation
+    /// </summary>
+    public static void nextGeneration()
+    {
+        createOneGeneration();
+        currentGeneration++;
+        currentChunk = 0;
+    }
+
+    /// <summary>
+    /// Get the current chunk id
+    /// </summary>
+    /// <returns></returns>
+    public static int getCurrentChunk()
+    {
+        return currentChunk;
+    }
+
+    /// <summary>
+    /// Get the current generation id
+    /// </summary>
+    /// <returns></returns>
+    public static int getCurrentGeneration()
+    {
+        return currentGeneration;
+    }
+
+    /// <summary>
+    /// Can we generate the next generation
+    /// </summary>
+    /// <returns>true if all chunks of a population have been generated</returns>
+    public static bool isCurrentGenerationDone()
+    {
+        return (currentChunk + 1) == POPULATION_SIZE / POPULATION_CHUNK_SIZE;
+    }
+
+    /// <summary>
+    /// Get dna at a given index in the current chunk
+    /// </summary>
+    /// <param name="dnaId"></param>
+    /// <returns>Return a DNAMonster instance if dnaId is between [0, POPULATION_CHUNK_SIZE - 1]</returns>
+    public static DNAMonster getDNAFromCurrentChunk(int dnaId)
+    {
+        return population[currentChunk * POPULATION_CHUNK_SIZE + dnaId];
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="index"> must be between [0, POPULATION_CHUNK_SIZE - 1] </param>
+    /// <returns></returns>
+    public static int getIndexInCurrentChunk(int index)
+    {
+        return currentChunk * POPULATION_CHUNK_SIZE + index;
+    }
+
     /// <summary>
     /// create parent population regarding to the bests scores
     /// </summary>
