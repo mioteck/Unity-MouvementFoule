@@ -46,10 +46,37 @@ public class GeneticAlgo{
     /// </summary>
     public static void createOneGeneration()
     {
-        statisticSelection();
+        selection();
         createNonCrossoverPopulation();
         crossover();
         mutate();
+    }
+    /// <summary>
+    /// create parent population regarding to the bests scores
+    /// </summary>
+    public static void selection()
+    {
+        int[,] bests = getBestMonsterIndexOrder();
+        int totalScore = 0;
+        for (int i = 0; i < POPULATION_SIZE; ++i)
+        {
+            totalScore += bests[i, 1];
+        }
+
+        Debug.Log("(GeneticAlgo.selection) : Average/Best Score for Génération " + generationCount + " = " + totalScore / POPULATION_SIZE + " / " + bests[0, 1]);
+        generationCount++;
+
+        for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
+        {
+            int temp = Random.Range(0, totalScore);
+            int j = 0;
+            while (temp >= 0)
+            {
+                temp -= bests[j, 1];
+                j++;
+            }
+            parentPopulation[i] = new DNAMonster(population[bests[j - 1, 0]]);
+        }
     }
     /// <summary>
     /// create parent population regarding to the bests scores and a probabilist system
@@ -133,13 +160,15 @@ public class GeneticAlgo{
                     switch (option)
                     {
                         case 0:
-                            crossoverSwapAction(i, randFather);
+                            crossoverCrossDNA(i, randMother, randFather);
+                            //crossoverSwapAction(i, randFather);
                             break;
                         case 1:
-                            crossoverSwapBodypart(i, randFather);
+                            crossoverCrossDNA(i, randMother, randFather);
+                            //crossoverSwapBodypart(i, randFather);
                             break;
                         case 2:
-                            crossoverCrossDNA(i, randFather);
+                            crossoverCrossDNA(i, randMother, randFather);
                             break;
                         default:
                             break;
@@ -322,13 +351,45 @@ public class GeneticAlgo{
     /// </summary>
     /// <param name="id"></param>
     /// <param name="idFather"></param>
-    public static void crossoverCrossDNA(int id, int idFather)
+    public static void crossoverCrossDNA(int idChild, int idMother, int idFather)
     {
-        if (population[id].getSize() >= 2 && parentPopulation[idFather].getSize() >= 2)
+        if (parentPopulation[idMother].getSize() >= 2 && parentPopulation[idFather].getSize() >= 2)
         {
-            int rand = Random.Range(0, population[id].getChildren().Length);
-            population[id].getChildren()[rand] = new DNAMonster(parentPopulation[idFather].getChildren()[0]);
-            population[id].getChildren()[rand].setParentAnchor(population[id].getAnchor()[0]);
+            //chose random subDna in root node of mother and father
+            int randMother = Random.Range(0, parentPopulation[idMother].getChildren().Length);
+            int randFather = Random.Range(0, parentPopulation[idFather].getChildren().Length);
+            //add missing bodypart
+            while(population[idChild].getAnchor().Length < 4)
+            {
+                population[idChild].addOneBodypart();
+            }
+            //create anchor tab
+            population[idChild].getAnchor()[0] = Vector3.right;
+            population[idChild].getAnchor()[1] = Vector3.left;
+            population[idChild].getAnchor()[2] = Vector3.forward;
+            population[idChild].getAnchor()[3] = Vector3.back;
+            //create children tab
+            population[idChild].getChildren()[0] = parentPopulation[idMother].getChildren()[randMother].getRotateSubDna(Vector3.right);
+            population[idChild].getChildren()[1] = parentPopulation[idMother].getChildren()[randMother].getRotateSubDna(Vector3.left);
+            population[idChild].getChildren()[2] = parentPopulation[idFather].getChildren()[randFather].getRotateSubDna(Vector3.forward);
+            population[idChild].getChildren()[3] = parentPopulation[idFather].getChildren()[randFather].getRotateSubDna(Vector3.back);
+            //reset parentAnchor
+            population[idChild].setParentAnchor(Vector3.zero);
+            //rescale
+            population[idChild].getBodyPart().setSize(1.5f * Vector3.one);
+            for(int i = 1; i< population[idChild].getSize(); i++)
+            {
+                Vector3 temp = population[idChild].getSubDna(i).getBodyPart().getSize();
+                if (temp.x > 1)
+                    temp.x = 1;
+                if (temp.y > 1)
+                    temp.y = 1;
+                if (temp.y > 1)
+                    temp.y = 1;
+                population[idChild].getSubDna(i).getBodyPart().setSize(temp);
+            }
         }
     }
+
+
 }

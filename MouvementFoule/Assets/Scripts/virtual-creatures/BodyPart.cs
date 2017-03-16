@@ -2,9 +2,9 @@
 
 
 public class BodyPart{
-    public static float MAX_X = 6.0f;
-    public static float MAX_Y = 6.0f;
-    public static float MAX_Z = 6.0f;
+    public static float MAX_X = 5.0f;
+    public static float MAX_Y = 5.0f;
+    public static float MAX_Z = 5.0f;
     private Vector3 size;
 
     public BodyPart(float x, float y, float z)

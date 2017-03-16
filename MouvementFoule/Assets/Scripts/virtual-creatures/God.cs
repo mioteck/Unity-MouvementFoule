@@ -54,8 +54,8 @@ public class God : MonoBehaviour {
                 Vector3 startPos = monster.getStartPos();
                 Vector3 endPos = monster.getPosition();
 
-                score = (int)(endPos.z - startPos.z)+ ((int)(endPos.z - startPos.z) * monster.getDna().getSize() / 20);
-                //score = (int)Mathf.Sqrt(Mathf.Pow(startPos.x - endPos.x, 2) + Mathf.Pow(startPos.z - endPos.z, 2));
+                //score = (int)(endPos.z - startPos.z)+ ((int)(endPos.z - startPos.z) * monster.getDna().getSize() / 20);
+                score = (int)Mathf.Sqrt(Mathf.Pow(startPos.x - endPos.x, 2) + Mathf.Pow(startPos.z - endPos.z, 2));
                 GeneticAlgo.getPopulation()[i].setScore(score);
             }
             monster.destroyMonster();

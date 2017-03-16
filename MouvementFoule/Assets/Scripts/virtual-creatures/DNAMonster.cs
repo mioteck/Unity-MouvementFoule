@@ -4,9 +4,9 @@ using UnityEngine;
 
 [System.Serializable]
 public class DNAMonster{
-    public static int [] NB_CHILDREN_CHANCE = { 45, 45, 10, 0, 0, 0 };//% de chance d'avoir 0, 1, 2, 3, 4, 5 enfants
-    public static int MAX_DEPTH = 5;
-    public static int MAX_CHILDREN = 2; //<=5 un cube n'a que 6 face!!!!! il faut garder un slot pour le parent
+    public static int [] NB_CHILDREN_CHANCE = { 10, 90, 0, 0, 0, 0 };//% de chance d'avoir 0, 1, 2, 3, 4, 5 enfants
+    public static int MAX_DEPTH = 4;
+    public static int MAX_CHILDREN = 1; //<=5 un cube n'a que 6 face!!!!! il faut garder un slot pour le parent
     private BodyPart bodyPart;
     private DNAMonster[] children;
     private Vector3[] anchor;
@@ -230,9 +230,12 @@ public class DNAMonster{
     public Vector3 getFreeAnchorSlot()
     {
         int rand = Random.Range(0, 6);
-        while(rand == associateAnchorToInt(parentAnchor))
+        if(parentAnchor != Vector3.zero)
         {
-            rand = Random.Range(0, 6);
+            while (rand == associateAnchorToInt(parentAnchor))
+            {
+                rand = Random.Range(0, 6);
+            }
         }
         if(children == null)
         {
@@ -338,6 +341,102 @@ public class DNAMonster{
         Debug.Log("ERROR in DNAMonster.getSubDna()");
         return null;
     }
+    /// <summary>
+    /// return the dna monster rotate in a way that his parentAnchor will now be the anchor get in parameter
+    /// </summary>
+    /// <param name="newParentAnchor"></param>
+    /// <returns></returns>
+    public DNAMonster getRotateSubDna(Vector3 newParentAnchor)
+    {
+        DNAMonster res = new DNAMonster(this);
+        if (parentAnchor == newParentAnchor)
+        {
+            return this;
+        }
+        Vector3 axis = Vector3.zero;
+        //si on garde le meme axe (inverser) on doit effectuer 2 fois la rotation
+        if (new Vector3((int)Mathf.Abs(parentAnchor.x), (int)Mathf.Abs(parentAnchor.y), (int)Mathf.Abs(parentAnchor.z)) == new Vector3((int)Mathf.Abs(newParentAnchor.x), (int)Mathf.Abs(newParentAnchor.y), (int)Mathf.Abs(newParentAnchor.z)))
+        {
+            axis = new Vector3((int)Mathf.Abs(parentAnchor.z), (int)Mathf.Abs(parentAnchor.x), (int)Mathf.Abs(parentAnchor.y));
+            res.changeAnchorFromAxis(axis);
+        }
+        else
+        {
+            int x = 1 - (int)Mathf.Abs(parentAnchor.x) - (int)Mathf.Abs(newParentAnchor.x);
+            int y = 1 - (int)Mathf.Abs(parentAnchor.y) - (int)Mathf.Abs(newParentAnchor.y);
+            int z = 1 - (int)Mathf.Abs(parentAnchor.z) - (int)Mathf.Abs(newParentAnchor.z);
+            axis = new Vector3(x, y, z);
+            if ((newParentAnchor.x > 0 || newParentAnchor.y > 0 || newParentAnchor.z > 0) && (parentAnchor.x < 0 || parentAnchor.y < 0 || parentAnchor.z < 0))
+                axis = new Vector3(-x, -y, -z);
+        }
+        res.changeAnchorFromAxis(axis);
+        return res;
+    }
+    /// <summary>
+    /// return the newAnchor corresponding to the oldAnchor get in parameter turn by 90 degree arround the axis 
+    /// </summary>
+    /// <param name="oldAnchor"></param>
+    /// <param name="axis"></param>
+    /// <returns></returns>
+    private Vector3 getNextAnchorFromAxis(Vector3 oldAnchor,Vector3 axis)
+    {
+        /*
+        Vector3[][] lookUpTable = new Vector3[3][];
+        lookUpTable[0] = new Vector3[4] { Vector3.up, Vector3.forward, Vector3.down, Vector3.back };
+        lookUpTable[1] = new Vector3[4] { Vector3.right, Vector3.forward, Vector3.left, Vector3.back };
+        lookUpTable[2] = new Vector3[4] { Vector3.right, Vector3.up, Vector3.left, Vector3.down };
+        */
+        if(axis == Vector3.zero)
+        {
+            Debug.Log("ERROR in DNAMonster.getNextAnchorFromAxis");
+            return Vector3.zero;
+        }
+        if(axis == Vector3.right || axis == Vector3.left)
+        {
+            if (oldAnchor == Vector3.up) return axis.x * Vector3.forward;
+            if (oldAnchor == Vector3.forward) return axis.x * Vector3.down;
+            if (oldAnchor == Vector3.down) return axis.x * Vector3.back;
+            if (oldAnchor == Vector3.back) return axis.x * Vector3.up;
+        }
+        if (axis == Vector3.up || axis == Vector3.down)
+        {
+            if (oldAnchor == Vector3.right) return axis.y * Vector3.forward;
+            if (oldAnchor == Vector3.forward) return axis.y * Vector3.left;
+            if (oldAnchor == Vector3.left) return axis.y * Vector3.back;
+            if (oldAnchor == Vector3.back) return axis.y * Vector3.right;
+        }
+        if (axis == Vector3.forward || axis == Vector3.back)
+        {
+            if (oldAnchor == Vector3.right) return axis.z * Vector3.up;
+            if (oldAnchor == Vector3.up) return axis.z * Vector3.left;
+            if (oldAnchor == Vector3.left) return axis.z * Vector3.down;
+            if (oldAnchor == Vector3.down) return axis.z * Vector3.right;
+        }
+        return oldAnchor;
+    }
+    /// <summary>
+    /// change all anchor of a subDna Tree
+    /// </summary>
+    /// <param name="axis"></param>
+    private void changeAnchorFromAxis(Vector3 axis)
+    {
+        parentAnchor = getNextAnchorFromAxis(parentAnchor, axis);
+        if(children != null)
+        {
+            for (int i = 0; i < children.Length; i++)
+            {
+                anchor[i] = getNextAnchorFromAxis(anchor[i], axis);
+                children[i].changeAnchorFromAxis(axis);
+            }
+        }
+
+    }
+
+
+
+
+
+
 
     /*
     /// <summary>
