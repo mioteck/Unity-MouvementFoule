@@ -20,11 +20,13 @@ public class God : MonoBehaviour {
     public int populationSize = 100;
     public int populationChunkSize = 10;
 
+    public Phenotype phenotype;
+
     // Use this for initialization
     void Start () {
         GeneticAlgo.POPULATION_SIZE = populationSize;
         GeneticAlgo.POPULATION_CHUNK_SIZE = populationChunkSize;
-        GeneticAlgo.initAlgo();
+        GeneticAlgo.initAlgo(phenotype);
         spawnCurrentChunk();
         tempTime = Time.time;
         updateUI();
