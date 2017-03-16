@@ -18,7 +18,7 @@ public class BodyPart{
         type = bodyPart.type;
         size = bodyPart.size;
     }
-    public BodyPart(BodyType type)
+    /*public BodyPart(BodyType type)
     {
         switch (type)
         {
@@ -37,7 +37,28 @@ public class BodyPart{
                 size = new Vector3(Random.Range(MIN, MAX), Random.Range(MIN, MAX), Random.Range(MIN, MAX));
                 break;
         }
+    }*/
+    public BodyPart(BodyType type, Vector3 axe)
+    {
+        switch (type)
+        {
+            case BodyType.LEG:
+                size = new Vector3(Random.Range(MIN, MAX), Random.Range(MIN, MAX), Random.Range(MIN, MAX));
+                break;
+            case BodyType.BODY:
+                size = new Vector3(Random.Range(MAX / 2, MAX), Random.Range(MAX / 2, MAX), Random.Range(MAX / 2, MAX));
+                break;
+            case BodyType.CUBE:
+                float rand = Random.Range(MAX / 2, MAX);
+                size = new Vector3(rand, rand, rand);
+                break;
+            default:
+                type = BodyType.DEFAULT;
+                size = new Vector3(Random.Range(MIN, MAX), Random.Range(MIN, MAX), Random.Range(MIN, MAX));
+                break;
+        }
     }
+
 
     public Vector3 getSize()
     {

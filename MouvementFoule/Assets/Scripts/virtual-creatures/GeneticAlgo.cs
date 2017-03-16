@@ -222,7 +222,6 @@ public class GeneticAlgo{
                 return i;
             }
         }
-
         for (int i = 0; i < startIndex; i++)
         {
             if (list[i] >= 0)
@@ -230,8 +229,6 @@ public class GeneticAlgo{
                 return i;
             }
         }
-
-
         Debug.Log("Cannot find more parent to pick. PARENT_POPULATION_SIZE is too big !");
         return -1;
     }
@@ -317,13 +314,16 @@ public class GeneticAlgo{
                     switch (option)
                     {
                         case 0:
-                            crossoverCrossSymmetry(i, randMother, randFather);
+                            crossoverGlobal(i, randMother, randFather);
+                            //crossoverCrossSymmetry(i, randMother, randFather);
                             break;
                         case 1:
-                            crossoverCrossAssymetry(i, randMother, randFather);
+                            crossoverGlobal(i, randMother, randFather);
+                            //crossoverCrossAssymetry(i, randMother, randFather);
                             break;
                         case 2:
-                            crossoverCrossRandom(i, randMother, randFather);
+                            crossoverGlobal(i, randMother, randFather);
+                            //crossoverCrossRandom(i, randMother, randFather);
                             break;
                         default:
                             break;
@@ -466,7 +466,7 @@ public class GeneticAlgo{
     public static void mutateRescaleBodypart(int id)
     {
         int rand = Random.Range(1, population[id].getSize());
-        population[id].getSubDna(rand).setBodypart(new BodyPart(population[id].getSubDna(rand).getBodyPart().getType()));
+        population[id].getSubDna(rand).setBodypart(new BodyPart(population[id].getSubDna(rand).getBodyPart().getType(), population[id].getSubDna(rand).getParentAnchor()));
     }
     /// <summary>
     /// mutate turn one node in dna
@@ -474,9 +474,20 @@ public class GeneticAlgo{
     /// <param name="id"></param>
     public static void mutateTurnNode(int id)
     {
+        //on tire la position du noeud que l'on souhaite tourné
         int rand = Random.Range(1, population[id].getSize());
-        //population[id] = new DNAMonster(population[id].getSubDna(rand).getRotateSubDna(population[id].getSubDna(rand).getFreeAnchorSlot()));
+        //on récupère un slot libre
+        Vector3 freeSlot = population[id].getSubDna(rand).getFreeAnchorSlot();
+        //on récupere l'ancre du parent
+        Vector3 parentAnchor = population[id].getSubDna(rand).getParentAnchor();
+        //on créé un temporaire qui correspond au noeud choisi tourné aléatoirement à une place libre
+        DNAMonster newSubDna = population[id].getSubDna(rand).getRotateSubDna(freeSlot);
+        //on reset la position du parent (qui toujours libre puisqu'on a choisi un slot libre pour la rotation)
+        newSubDna.setParentAnchor(parentAnchor);
+        //on set la nouvelle valeur dans le noeud
+        population[id].setSubDna(rand, newSubDna);
     }
+
     /// <summary>
     /// set spider from 1 leg of father and 1 leg of mother position symmetrically
     /// </summary>
@@ -535,5 +546,46 @@ public class GeneticAlgo{
         }
     }
 
+    /// <summary>
+    /// Global crossover working for all phenotype
+    /// </summary>
+    /// <param name="idChild"></param>
+    /// <param name="idMother"></param>
+    /// <param name="idFather"></param>
+    public static void crossoverGlobal(int idChild, int idMother, int idFather)
+    {
+        population[idChild] = new DNAMonster(parentPopulation[idMother]);
+        DNAMonster[] tempFather = parentPopulation[idFather].getChildren();
+        DNAMonster[] tempMother = parentPopulation[idMother].getChildren();
+        int randFather = Random.Range(0, tempFather.Length);
+        //on parcours le premier tableau children de la mere
+        for(int i = 0; i < tempMother.Length; i++)
+        {
+            //on cherche le premier node de meme type que le noeud aléatoire du pere
+            if(tempFather[randFather].getBodyPart().getType() == tempMother[i].getBodyPart().getType())
+            {
+                //on effectue la mutation
+                population[idChild].getChildren()[i] = new DNAMonster(tempFather[randFather].getRotateSubDna(tempMother[i].getParentAnchor()));
+                //on parcours une deuxieme fois la mere 
+                for(int j = 0; j < tempMother.Length; j++)
+                {
+                    //on cherche un node symetriquement placé
+                    if (tempMother[i].getParentAnchor() == -tempMother[j].getParentAnchor())
+                    {
+                        //si le type correspond on effectue la mutation symétrique et on casse la boucle
+                        if (tempFather[randFather].getBodyPart().getType() == tempMother[j].getBodyPart().getType())
+                        {
+                            population[idChild].getChildren()[j] = new DNAMonster(tempFather[randFather].getRotateSubDna(tempMother[j].getParentAnchor()));
+                            j = tempMother.Length;
+                        }
+                    }
+                }
+                //on casse la boucle
+                i = tempMother.Length;
+            }
+        }
+
+
+    }
 
 }

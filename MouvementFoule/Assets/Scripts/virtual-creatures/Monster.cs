@@ -168,7 +168,7 @@ public class Monster : MonoBehaviour {
             softJointLimit.contactDistance = 0;
             joint.swing2Limit = softJointLimit;
             //configure resistance of the joint
-            joint.breakForce = 5000;
+            joint.breakTorque = 5000;
             joint.breakForce = 5000;
         }
     }
