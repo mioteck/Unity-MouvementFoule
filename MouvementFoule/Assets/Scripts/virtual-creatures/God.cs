@@ -24,7 +24,7 @@ public class God : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        phenotype = Phenotype.RANDOM;
+        //phenotype = Phenotype.RANDOM;
         GeneticAlgo.POPULATION_SIZE = populationSize;
         GeneticAlgo.POPULATION_CHUNK_SIZE = populationChunkSize;
         GeneticAlgo.initAlgo(phenotype);

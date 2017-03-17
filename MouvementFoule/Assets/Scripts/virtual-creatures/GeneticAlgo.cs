@@ -484,8 +484,55 @@ public class GeneticAlgo
     public static void mutateChangeAction(int id)
     {
         int rand = Random.Range(1, population[id].getSize());
-        population[id].getSubDna(rand).setAction(new MoveAction_2(true));
+        MoveAction_2 act = population[id].getSubDna(rand).getAction();
+
+        mutateChangeActionSpeed(act, new Vector3(
+            Random.Range(0.75f, 1.5f), Random.Range(0.75f, 1.5f), Random.Range(0.75f, 1.5f)
+        ));
+
+        mutateChangeActionFrequency(act, new Vector3(
+            Random.Range(0.75f, 1.5f), Random.Range(0.75f, 1.5f), Random.Range(0.75f, 1.5f)
+        ));
+
+        if (Random.Range(0.0f, 10.0f) > 8.0f)
+            mutateInvertVelocityFactor(act);
+
+        if (Random.Range(0.0f, 10.0f) > 9.0f)
+            mutateModifyMovementType(act);
+
+        if (Random.Range(0.0f, 10.0f) > 9.5f)
+            population[id].getSubDna(rand).setAction(new MoveAction_2(true));
     }
+
+    public static void mutateChangeActionSpeed(MoveAction_2 a, Vector3 offset)
+    {
+        a.waveSpeedX += Mathf.Clamp(a.waveSpeedX * offset.x, -15.0f, 15.0f);
+        a.waveSpeedY += Mathf.Clamp(a.waveSpeedY * offset.y, -15.0f, 15.0f);
+        a.waveSpeedZ += Mathf.Clamp(a.waveSpeedZ * offset.z, -15.0f, 15.0f);
+    }
+
+    public static void mutateChangeActionFrequency(MoveAction_2 a, Vector3 offset)
+    {
+        a.frequencyX += Mathf.Clamp(a.frequencyX * offset.x, 0.0f, 20.0f);
+        a.frequencyY += Mathf.Clamp(a.frequencyY * offset.y, 0.0f, 20.0f);
+        a.frequencyZ += Mathf.Clamp(a.frequencyZ * offset.z, 0.0f, 20.0f);
+    }
+
+    public static void mutateInvertVelocityFactor(MoveAction_2 a)
+    {
+        a.angularVelocityFactor = -a.angularVelocityFactor;
+    }
+
+    public static void mutateModifyMovementType(MoveAction_2 a)
+    {
+        if (a.movementType == MoveAction_2.MovementType.LINEAR)
+            a.movementType = MoveAction_2.MovementType.RIGID;
+        else if (a.movementType == MoveAction_2.MovementType.RIGID)
+            a.movementType = MoveAction_2.MovementType.WAVE;
+        else if (a.movementType == MoveAction_2.MovementType.WAVE)
+            a.movementType = MoveAction_2.MovementType.LINEAR;
+    }
+
     /// <summary>
     /// mutate -> rescale one bodypart
     /// </summary>

@@ -84,6 +84,22 @@ public class Monster : MonoBehaviour {
                 createMonster(dna.getChildren()[i], 0);
             }
         }
+
+        MemberEffector effector = go[0].GetComponent<MemberEffector>();
+        if (AGDna.getBodyPart().getType() == BodyType.CUBE)
+        {
+            effector.constraintRotationX = true;
+            effector.constraintRotationY = true;
+            effector.constraintRotationZ = true;
+        }
+        else if (AGDna.getBodyPart().getType() == BodyType.BODY)
+        {
+            effector.constraintRotationX = true;
+            effector.constraintRotationZ = true;
+        }
+
+        effector.Refresh();
+
         isGenerate = true;
     }
     /// <summary>
@@ -136,6 +152,8 @@ public class Monster : MonoBehaviour {
             effector.constraintRotationX = true;
             effector.constraintRotationZ = true;
         }
+
+        effector.Refresh();
     }
     /// <summary>
     /// create joint according to parameters
@@ -194,8 +212,8 @@ public class Monster : MonoBehaviour {
             joint.swing2Limit = softJointLimit;
 
             //configure resistance of the joint
-            joint.breakForce = 15000;
-            joint.breakTorque = 15000;
+            joint.breakForce = 5000;
+            joint.breakTorque = 5000;
         }
     }
 

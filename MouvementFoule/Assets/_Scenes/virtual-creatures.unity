@@ -194,7 +194,7 @@ MonoBehaviour:
   chunkText: {fileID: 1493251455}
   populationSize: 100
   populationChunkSize: 100
-  phenotype: 1
+  phenotype: 3
 --- !u!4 &211027043
 Transform:
   m_ObjectHideFlags: 0

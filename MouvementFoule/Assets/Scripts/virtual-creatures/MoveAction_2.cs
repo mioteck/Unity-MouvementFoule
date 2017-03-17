@@ -43,7 +43,7 @@ public class MoveAction_2 {
             else
                 movementType = MovementType.LINEAR;
 
-            freezeNotOnGround = (Random.Range(0.0f, 10.0f) > 5f);
+            freezeNotOnGround = (Random.Range(0.0f, 10.0f) > 8f);
         }
     }
 
