@@ -31,6 +31,9 @@ public class GeneticAlgo
     private static DNAMonster[] population;
     private static DNAMonster[] parentPopulation;
 
+    public static bool initFromFolder;
+    public static string dnaFolder = "";
+
     /// <summary>
     /// initialise the population randomly for the first generation of monsters
     /// </summary>
@@ -45,14 +48,6 @@ public class GeneticAlgo
 
         population = new DNAMonster[POPULATION_SIZE];
         parentPopulation = new DNAMonster[PARENT_POPULATION_SIZE];
-        for (int i = 0; i < POPULATION_SIZE; ++i)
-        {
-            population[i] = new DNAMonster(phenotype, Vector3.zero);
-        }
-        for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
-        {
-            parentPopulation[i] = new DNAMonster(phenotype, Vector3.zero);
-        }
         initializeChunk();
         initializeParentPopulation();
     }
@@ -75,7 +70,14 @@ public class GeneticAlgo
     {
         for (int i = 0; i < PARENT_POPULATION_SIZE; ++i)
         {
-            parentPopulation[i] = new DNAMonster(phenotype, Vector3.zero);
+            if (initFromFolder)
+            {
+                parentPopulation[i] = DNASerializer.loadDNAFromFile(dnaFolder + "/" + i + ".json");
+            }
+            else
+            {
+                parentPopulation[i] = new DNAMonster(phenotype, Vector3.zero);
+            }
         }
     }
 
@@ -86,7 +88,15 @@ public class GeneticAlgo
     {
         for (int i = 0; i < POPULATION_CHUNK_SIZE; ++i)
         {
-            population[currentChunk * POPULATION_CHUNK_SIZE + i] = new DNAMonster(phenotype, Vector3.zero);
+            int index = currentChunk * POPULATION_CHUNK_SIZE + i;
+            if (currentGeneration == 0 && initFromFolder)
+            {
+                population[index] = DNASerializer.loadDNAFromFile(dnaFolder + "/" + index + ".json");
+            }
+            else
+            {
+                population[index] = new DNAMonster(phenotype, Vector3.zero);
+            }
         }
     }
 
@@ -445,7 +455,7 @@ public class GeneticAlgo
     {
         DNAMonster dna = population[id];
 
-        while (dna.getChildren() != null)
+        while (dna.getChildren() != null && dna.getChildren().Length > 0)
         {
             int rand = Random.Range(0, dna.getChildren().Length);
             dna = dna.getChildren()[rand];
@@ -464,7 +474,7 @@ public class GeneticAlgo
         DNAMonster dna = population[id];
         int depth = 0;
 
-        while (dna.getChildren() != null)
+        while (dna.getChildren() != null && dna.getChildren().Length > 0)
         {
             int rand = Random.Range(0, dna.getChildren().Length);
             parent = dna;
