@@ -19,6 +19,21 @@ public class MoveAction_2 {
 
     public bool freezeNotOnGround = false;
 
+    public MoveAction_2(MoveActionSer_2 m)
+    {
+        waveSpeedX = m.waveSpeedX;
+        waveSpeedY = m.waveSpeedY;
+        waveSpeedZ = m.waveSpeedZ;
+
+        frequencyX = m.frequencyX;
+        frequencyY = m.frequencyY;
+        frequencyZ = m.frequencyZ;
+
+        angularVelocityFactor = m.angularVelocityFactor;
+        movementType = m.movementType;
+        freezeNotOnGround = m.freezeNotOnGround;
+    }
+
     public MoveAction_2(bool random)
     {
         if (random)

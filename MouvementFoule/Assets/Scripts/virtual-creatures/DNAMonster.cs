@@ -40,17 +40,7 @@ public class DNAMonster{
             {
                 DNAMonsterSer d = children[i];
 
-                MoveAction_2 action = new MoveAction_2(false); // TO DO : Constructeur avec MoveActionSer_2
-
-                action.movementType = d.action.movementType;
-                action.angularVelocityFactor = d.action.angularVelocityFactor;
-                action.freezeNotOnGround = d.action.freezeNotOnGround;
-                action.frequencyX = d.action.frequencyX;
-                action.frequencyY = d.action.frequencyY;
-                action.frequencyZ = d.action.frequencyZ;
-                action.waveSpeedX = d.action.waveSpeedX;
-                action.waveSpeedY = d.action.waveSpeedY;
-                action.waveSpeedZ = d.action.waveSpeedZ;
+                MoveAction_2 action = new MoveAction_2(d.action);
 
                 this.children[i] = new DNAMonster(action, new BodyPart(d.bodyPartSize), d.children, d.anchors, d.parentAnchor);
 

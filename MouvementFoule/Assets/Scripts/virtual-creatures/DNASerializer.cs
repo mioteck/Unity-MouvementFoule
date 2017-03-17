@@ -100,25 +100,6 @@ public class DNASerializer {
             serDna.children = null;
         }
 
-        /*serDna.action = new MoveActionSer();
-        serDna.action.action = new List<ActionType>();
-        foreach (ActionType actionType in dnaMonster.getAction().action)
-        {
-            serDna.action.action.Add(actionType);
-        }
-
-        serDna.action.axe = new List<Vector3>();
-        foreach (Vector3 v in dnaMonster.getAction().axe)
-        {
-            serDna.action.axe.Add(v);
-        }
-
-        serDna.action.power = new List<int>();
-        foreach (int power in dnaMonster.getAction().power)
-        {
-            serDna.action.power.Add(power);
-        }*/
-
         serDna.action = new MoveActionSer_2();
         serDna.action.movementType = dnaMonster.getAction().movementType;
         serDna.action.angularVelocityFactor = dnaMonster.getAction().angularVelocityFactor;
@@ -129,15 +110,15 @@ public class DNASerializer {
         serDna.action.frequencyZ = dnaMonster.getAction().frequencyZ;
 
         serDna.action.waveSpeedX = dnaMonster.getAction().waveSpeedX;
-        serDna.action.waveSpeedX = dnaMonster.getAction().waveSpeedY;
-        serDna.action.waveSpeedX = dnaMonster.getAction().waveSpeedZ;
+        serDna.action.waveSpeedY = dnaMonster.getAction().waveSpeedY;
+        serDna.action.waveSpeedZ = dnaMonster.getAction().waveSpeedZ;
 
         return serDna;
     }
     
     private static DNAMonster translateDNAMonsterSer(DNAMonsterSer dna)
     {
-        MoveAction_2 action = new MoveAction_2(false);
+        MoveAction_2 action = new MoveAction_2(dna.action);
 
         action.movementType = dna.action.movementType;
         action.angularVelocityFactor = dna.action.angularVelocityFactor;
