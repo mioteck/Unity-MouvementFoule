@@ -122,7 +122,7 @@ public class DNAMonster{
                 break;
             case Phenotype.SNAKE:
                 bodyPart = new BodyPart(BodyType.CUBE, newParentAnchor);
-                action = new MoveAction(ActionType.NULL);
+                action = new MoveAction_2(false);
                 parentAnchor = newParentAnchor;
                 //create leg
                 DNAMonster leg = new DNAMonster(Phenotype.LINE, Vector3.forward, 4);
@@ -136,13 +136,13 @@ public class DNAMonster{
                 if(newParentAnchor == Vector3.zero)
                 {
                     bodyPart = new BodyPart(BodyType.CUBE, newParentAnchor);
-                    action = new MoveAction(ActionType.NULL);
+                    action = new MoveAction_2(false);
                     parentAnchor = newParentAnchor;
                 }
                 else
                 {
                     bodyPart = new BodyPart(BodyType.DEFAULT, newParentAnchor);
-                    action = new MoveAction();
+                    action = new MoveAction_2(true);
                     parentAnchor = newParentAnchor;
                 }
                 int nbChildren = Random.Range(1,4);
