@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Phenotype { LINE, SPIDER, UNIQUE, SNAKE, RANDOM}
+public enum Phenotype { SPIDER, SNAKE, BIPED, LINE, UNIQUE, RANDOM}
 
 [System.Serializable]
 public class DNAMonster{
@@ -122,38 +122,25 @@ public class DNAMonster{
                 children[0] = new DNAMonster(leg.getRotateSubDna(Vector3.back));
                 anchor[0] = Vector3.back;
                 break;
+            case Phenotype.BIPED:
+                bodyPart = new BodyPart(BodyType.CUBE, newParentAnchor);
+                action = new MoveAction_2(false);
+                parentAnchor = newParentAnchor;
+                children = new DNAMonster[2];
+                anchor = new Vector3[2];
+                //create leg
+                DNAMonster leg1 = new DNAMonster(Phenotype.LINE, Vector3.up, 1);
+                //create 4 'legs' by rotating leg
+                children[0] = new DNAMonster(leg1.getRotateSubDna(Vector3.down));
+                children[0].setParentAnchor(Vector3.right);
+                anchor[0] = Vector3.right;
+                children[1] = new DNAMonster(leg1.getRotateSubDna(Vector3.down));
+                children[1].setParentAnchor(Vector3.left);
+                anchor[1] = Vector3.left;
+                break;
             case Phenotype.RANDOM:
-                if(newParentAnchor == Vector3.zero)
-                {
-                    bodyPart = new BodyPart(BodyType.CUBE, newParentAnchor);
-                    action = new MoveAction_2(false);
-                    parentAnchor = newParentAnchor;
-                }
-                else
-                {
-                    bodyPart = new BodyPart(BodyType.DEFAULT, newParentAnchor);
-                    action = new MoveAction_2(true);
-                    parentAnchor = newParentAnchor;
-                }
-                int nbChildren = Random.Range(1,4);
-                anchor = new Vector3[nbChildren];
-                children = new DNAMonster[nbChildren];
-                for(int i = 0; i < nbChildren; i++)
-                {
-                    int isLineOrRandom = Random.Range(0, 5);
-                    int l = Random.Range(2, 6);
-                    Vector3 a = getFreeAnchorSlot();
-                    if(isLineOrRandom != 0)
-                    {
-                        anchor[i] = new Vector3((int)Mathf.Abs(a.x), (int)Mathf.Abs(a.y), (int)Mathf.Abs(a.z));
-                        children[i] = new DNAMonster(Phenotype.LINE, anchor[i], l).getRotateSubDna(a);
-                    }
-                    else
-                    {
-                        anchor[i] = new Vector3((int)Mathf.Abs(a.x), (int)Mathf.Abs(a.y), (int)Mathf.Abs(a.z));
-                        children[i] = new DNAMonster(Phenotype.RANDOM, anchor[i], l).getRotateSubDna(a);
-                    }
-                }
+                int rand = Random.Range(0, 3);
+                this.copyFrom(new DNAMonster((Phenotype)rand, newParentAnchor, length));
                 break;
             default:
                 Debug.Log("ERROR in DNAMonster.constructor.phenotype");
@@ -356,11 +343,25 @@ public class DNAMonster{
         return children;
     }
 
-    public void setSubDna(DNAMonster[] newChildren, Vector3[] newAnchor, MoveAction_2 newAction)
+    /// <summary>
+    /// = constructeur par copy (use by constructor itself to modifu this)
+    /// </summary>
+    /// <param name="dna"></param>
+    private void copyFrom(DNAMonster dna)
     {
-        children = newChildren;
-        anchor = newAnchor;
-        action = newAction;
+        bodyPart = dna.bodyPart;
+        parentAnchor = dna.parentAnchor;
+        action = new MoveAction_2(dna.action);
+        if (dna.children != null)
+        {
+            children = new DNAMonster[dna.children.Length];
+            anchor = new Vector3[dna.anchor.Length];
+            for (int i = 0; i < dna.children.Length; ++i)
+            {
+                children[i] = new DNAMonster(dna.children[i]);
+                anchor[i] = dna.anchor[i];
+            }
+        }
     }
 
     public Vector3[] getAnchor()

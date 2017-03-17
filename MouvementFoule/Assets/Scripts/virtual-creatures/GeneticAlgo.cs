@@ -22,7 +22,7 @@ public class GeneticAlgo
     public static int MUTATE_START = SELECTION_NB_RANDOM_CHILREN + SELECTION_NB_KEEP_PARENT;
     public static int MUTATE_PROBABILITY = 30;
     public static int MUTATE_STRONG = 1;
-    public static int MUTATE_NB_OPTION = 5;
+    public static int MUTATE_NB_OPTION = 7;
 
     public static int generationCount = 0;
 
@@ -373,10 +373,17 @@ public class GeneticAlgo
                             mutateChangeAction(i);
                             break;
                         case 3:
+                            mutateChangeAction(i);
                             //mutateTurnNode(i);
                             break;
                         case 4:
                             mutateRescaleBodypart(i);
+                            break;
+                        case 5:
+                            mutateChangeAction(i);
+                            break;
+                        case 6:
+                            mutateChangeAction(i);
                             break;
                         default:
                             break;

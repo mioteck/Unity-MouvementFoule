@@ -31,7 +31,7 @@ public class God : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        //phenotype = Phenotype.RANDOM;
+        phenotype = Phenotype.RANDOM;
         GeneticAlgo.POPULATION_SIZE = populationSize;
         GeneticAlgo.POPULATION_CHUNK_SIZE = populationChunkSize;
 
@@ -118,7 +118,7 @@ public class God : MonoBehaviour {
         {
             int index = GeneticAlgo.getIndexInCurrentChunk(i);
             DNAMonster dna = GeneticAlgo.getDNAFromCurrentChunk(i);
-            spawnMonster(new Vector3(8 * (index - GeneticAlgo.POPULATION_SIZE / 2), 5, -235), currentLayer, dna);
+            spawnMonster(new Vector3(8 * (index - GeneticAlgo.POPULATION_SIZE / 2), 10, -235), currentLayer, dna);
             currentLayer++;
             if (currentLayer > 19)
             {

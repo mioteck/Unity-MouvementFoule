@@ -174,12 +174,8 @@ public class Monster : MonoBehaviour {
             joint.connectedBody = child.GetComponent<Rigidbody>();
             Vector3 a = childDna.getParentAnchor();
             Vector3 ps = parent.transform.localScale;
-            // Vector3 anchor = new Vector3(a.x * (ps.x / 2), a.y * (ps.y / 2), a.z * (ps.z / 2));
-            // joint.axis = new Vector3(a.x+0.2f, a.y+0.2f, a.z+0.2f).normalized;
-
-            //joint.swingAxis = new Vector3(Mathf.Abs(a.x), Mathf.Abs(a.y), Mathf.Abs(a.z));
             //configure lowTwistLimit
-            softJointLimit.limit = -80; // -10 is better
+            softJointLimit.limit = -10; // -10 is better
             softJointLimit.bounciness = 0;
             joint.anchor = 0.5f * childDna.getParentAnchor();
             //joint.axis = new Vector3(a.z, a.x, a.y);
@@ -212,8 +208,8 @@ public class Monster : MonoBehaviour {
             joint.swing2Limit = softJointLimit;
 
             //configure resistance of the joint
-            joint.breakForce = 5000;
-            joint.breakTorque = 5000;
+            joint.breakForce = 10000;
+            joint.breakTorque = 10000;
         }
     }
 
